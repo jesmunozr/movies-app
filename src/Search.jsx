@@ -1,35 +1,24 @@
-import React from 'react';
-
-const Search = ({initialQuery, onSearch}) => {
-    const searchContainer = React.createElement("div", null,
-        React.createElement("h1", null, "Find Your Movie"),
-        React.createElement(
-            "input", 
-            { 
-                id: "search-input",
-                type: "text",
-                defaultValue: initialQuery,
-                placeholder: "What do you want to watch?", 
-                onKeyUp: (event) => {
+function Search({initialQuery, onSearch}){
+    return (
+        <div>
+            <h1>Find Your Movie</h1>
+            <input 
+                id="search-input"
+                type="text"
+                defaultValue={initialQuery}
+                placeholder="What do you want to watch?" 
+                onKeyUp={(event) => {
                     if (event.key === "Enter") {
                         onSearch(event.target.value);
                     }
-                }
-            }
-        ),
-        React.createElement(
-            "button", 
-            { 
-                onClick: () => {
-                    let movie = document.getElementById("search-input").value; // Reset input to initial query
-                    onSearch(movie);
-                }
-            }, 
-            "Search"
-        )
+                }}
+            />
+            <button onClick={() => {
+                let movie = document.getElementById("search-input").value;
+                onSearch(movie);
+            }}>Search</button>
+        </div>
     );
-
-    return searchContainer;
-};
+}
 
 export default Search;
