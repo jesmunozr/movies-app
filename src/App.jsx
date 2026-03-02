@@ -4,7 +4,8 @@ import Search from './Search.jsx'
 import Genre from './Genre.jsx'
 
 function App(){
-  const [queriedMovie, setQueriedMovie] = useState("The Matrix");
+  const initialQueryMovie = "The Matrix";
+  const [queriedMovie, setQueriedMovie] = useState(initialQueryMovie);
   const [selectedGenre, setSelectedGenre] = useState("");
 
   return (

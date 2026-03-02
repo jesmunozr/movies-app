@@ -1,9 +1,11 @@
+import React from "react";
+
 function Search({initialQuery, onSearch}){
+    const [query, setQuery] = React.useState(initialQuery);
     return (
         <div>
             <h1>Find Your Movie</h1>
             <input 
-                id="search-input"
                 type="text"
                 defaultValue={initialQuery}
                 placeholder="What do you want to watch?" 
@@ -12,10 +14,12 @@ function Search({initialQuery, onSearch}){
                         onSearch(event.target.value);
                     }
                 }}
+                onChange={(event) => {
+                    setQuery(event.target.value);
+                }}
             />
             <button onClick={() => {
-                let movie = document.getElementById("search-input").value;
-                onSearch(movie);
+                onSearch(query);
             }}>Search</button>
         </div>
     );

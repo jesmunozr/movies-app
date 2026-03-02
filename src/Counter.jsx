@@ -10,8 +10,8 @@ const Counter = ({initialValue}) => {
 
     const counterContainer = React.createElement("div", null,
         React.createElement("h1", null, `Counter: ${count}`),
-        React.createElement("button", { onClick: () => setCount(count + 1) }, "Increment"),
-        React.createElement("button", { onClick: () => setCount(count - 1) }, "Decrement")
+        React.createElement("button", { "data-cy": "increment-button", onClick: () => setCount(count + 1) }, "Increment"),
+        React.createElement("button", { "data-cy": "decrement-button", onClick: () => setCount(count - 1) }, "Decrement")
     );
 
     return counterContainer;
