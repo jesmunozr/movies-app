@@ -1,12 +1,12 @@
-function Genre(pt: { genreList: Array<string>, selectedGenre: string, onSelect: (genre: string) => void }) {
-    const genresWithPlaceholder = ["", ...pt.genreList];
+function Genre({ genreList, selectedGenre, onSelect }: { genreList: Array<string>, selectedGenre: string, onSelect: (genre: string) => void }) {
+    const genresWithPlaceholder = ["", ...genreList];
     return (
         <div>
             <label htmlFor="genre-select">Genre</label>
             <select
                 id="genre-select"
-                value={pt.selectedGenre}
-                onChange={(event) => pt.onSelect(event.target.value)}
+                value={selectedGenre}
+                onChange={(event) => onSelect(event.target.value)}
             >
                 {genresWithPlaceholder.map((genre) => {
                     if (genre === "") {
