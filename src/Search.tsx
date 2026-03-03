@@ -1,6 +1,6 @@
 import React from "react";
 
-function Search({initialQuery, onSearch}){
+function Search({ initialQuery, onSearch }: { initialQuery: string, onSearch: (query: string) => void }){
     const [query, setQuery] = React.useState(initialQuery);
     return (
         <div>
@@ -9,9 +9,9 @@ function Search({initialQuery, onSearch}){
                 type="text"
                 defaultValue={initialQuery}
                 placeholder="What do you want to watch?" 
-                onKeyUp={(event) => {
+                onKeyUp={(event: React.KeyboardEvent<HTMLInputElement>) => {
                     if (event.key === "Enter") {
-                        onSearch(event.target.value);
+                        onSearch(event.currentTarget.value);
                     }
                 }}
                 onChange={(event) => {

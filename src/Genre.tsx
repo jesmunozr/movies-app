@@ -1,4 +1,4 @@
-function Genre({genreList, selectedGenre, onSelect}){
+function Genre({ genreList, selectedGenre, onSelect }: { genreList: Array<string>, selectedGenre: string, onSelect: (genre: string) => void }) {
     const genresWithPlaceholder = ["", ...genreList];
     return (
         <div>

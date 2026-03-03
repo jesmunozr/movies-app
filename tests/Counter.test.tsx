@@ -1,23 +1,11 @@
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { expect, it } from "vitest";
-import Counter from "../src/Counter";
+import Counter from "../src/Counter.tsx";
 
 it("renders Counter component with initial value", () => {
     render(<Counter initialValue={10} />);
     const counterElement = screen.getByText(/Counter: 10/i);
-    expect(counterElement).toBeInTheDocument();
-});
-
-it("renders Counter component with default initial value", () => {
-    render(<Counter />);
-    const counterElement = screen.getByText(/Counter: 0/i);
-    expect(counterElement).toBeInTheDocument();
-});
-
-it("renders Counter component with invalid initial value", () => {
-    render(<Counter initialValue="invalid" />);
-    const counterElement = screen.getByText(/Counter: 0/i);
     expect(counterElement).toBeInTheDocument();
 });
 

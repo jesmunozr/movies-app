@@ -1,19 +1,19 @@
 import { useState } from 'react'
-import Counter from './Counter.jsx'
-import Search from './Search.jsx'
-import Genre from './Genre.jsx'
+import Counter from './Counter.js'
+import Search from './Search.js'
+import Genre from './Genre.js'
 
 function App(){
-  const initialQueryMovie = "The Matrix";
+  const initialQueryMovie: string = "The Matrix";
   const [queriedMovie, setQueriedMovie] = useState(initialQueryMovie);
   const [selectedGenre, setSelectedGenre] = useState("");
 
   return (
     <>
-      <Counter initialValue="5" />
+      <Counter initialValue={5} />
       <Search 
         initialQuery={queriedMovie}
-        onSearch={(query) => {
+        onSearch={(query: string) => {
           console.log("Searching for:", query);
           setQueriedMovie(query);
         }} 
@@ -21,7 +21,7 @@ function App(){
       <Genre 
         genreList={["Crime", "Documentary", "Horror", "Comedy"]} 
         selectedGenre={selectedGenre} 
-        onSelect={(genre) => {
+        onSelect={(genre: string) => {
           console.log("Selected genre:", genre);
           setSelectedGenre(genre);
         }} 

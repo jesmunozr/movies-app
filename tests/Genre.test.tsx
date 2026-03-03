@@ -1,7 +1,7 @@
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { expect, it, vi } from "vitest";
-import Genre from "../src/Genre";
+import Genre from "../src/Genre.tsx";
 
 it("renders all genres passed in genreList parameter", () => {
     const genreList = ["Action", "Comedy", "Drama"];
