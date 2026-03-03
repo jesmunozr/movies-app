@@ -1,11 +1,11 @@
 import React from "react";
 
-const Counter = ({initialValue}) => {
-    let initialCounter = Number(initialValue);
-    if (Number.isNaN(initialCounter)) {
-        initialCounter = 0;
-        console.log("Invalid initial counter value. Defaulting to 0.");
-    }
+const Counter = (pt: { initialValue: number }) => {
+    let initialCounter = pt.initialValue;
+    // if (Number.isNaN(initialCounter)) {
+    //     initialCounter = 0;
+    //     console.log("Invalid initial counter value. Defaulting to 0.");
+    // }
     const [count, setCount] = React.useState(initialCounter);
 
     const counterContainer = React.createElement("div", null,
