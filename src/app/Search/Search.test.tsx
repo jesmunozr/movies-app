@@ -1,7 +1,7 @@
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { expect, it, vi } from "vitest";
-import Search from "../src/Search.tsx";
+import Search from "./Search.tsx";
 
 it("renders Search component with initial query", () => {
     render(<Search initialQuery="test" onSearch={() => {}} />);

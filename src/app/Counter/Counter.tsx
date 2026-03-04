@@ -1,8 +1,13 @@
 import React from "react";
 
-const Counter = ({ initialValue }: { initialValue: number }) => {
-    let initialCounter = initialValue;
-    const [count, setCount] = React.useState(initialCounter);
+export interface CounterProps {
+    /** The initial value of the counter */
+    initialValue: number;
+}
+
+/** A simple counter component that allows incrementing and decrementing a value. */
+const Counter = ({ initialValue }: CounterProps) => {
+    const [count, setCount] = React.useState(initialValue);
 
     const counterContainer = React.createElement("div", null,
         React.createElement("h1", null, `Counter: ${count}`),
