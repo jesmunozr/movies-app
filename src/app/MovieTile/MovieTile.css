@@ -1,0 +1,84 @@
+.movie-tile {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 342px;
+    padding: 10px;
+    cursor: pointer;
+    /*background-color: brown;*/
+}
+.movie-tile img {
+    width: 100%;
+    height: auto;
+}
+.movie-tile button {
+    border-radius: 50%;
+    border: none;
+    width: 36px;
+    height: 36px;
+    background-color: #232323;
+    color: #ffffff;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 1.9em;
+    cursor: pointer;
+    padding: 0;
+    line-height: 1;
+    margin: 20px;
+    position: absolute;
+    top: 0;
+    right: 0;
+
+}
+.movie-tile-info {
+    margin-top: 30px;
+    display: flex;
+    flex-wrap: wrap;
+    font-family: 'Montserrat', sans-serif;
+    font-size: 0.9em;
+}
+.movie-tile-info h2 {
+    font-size: 1.5em;
+    margin: 0;
+    flex-grow: 3;
+    line-height: 1.5;
+    font-weight: 400;
+}
+.movie-tile-info .release-year {
+    font-size: 1.2em;
+    margin: 0px;
+    border: 1px solid #ccc;
+    padding: 5px 10px;
+    border-radius: 4px;
+}
+.movie-tile-context-menu {
+    display: flex;
+    flex-direction: column;
+    /* width: 190px; */
+    background-color: #232323;
+    color: #ffffff;
+    font-family: 'Montserrat', sans-serif;
+    font-size: 1em;
+}
+.movie-tile-context-menu ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+.movie-tile-context-menu li {
+    padding: 10px;
+}
+.movie-tile-context-menu li:hover {
+    background-color: #f65261;
+}
+.movie-tile-context-menu button {
+    border: none;
+    background: none;
+    color: #ffffff;
+    cursor: pointer;
+    align-self: flex-end;
+    margin-top: 5px;
+    margin-right: 5px;
+}
