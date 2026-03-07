@@ -52,7 +52,7 @@ const MovieTile = ({
             <div className="movie-tile-info">
                 <h2>{title}</h2>
                 <p className="release-year">{releaseDate.getFullYear()}</p>
-                <p>{genres.join(", ")}</p>
+                <p className="genres">{genres.join(", ")}</p>
             </div>
             <button onClick={openPortal}>&#8942;</button>
             {isOpen && createPortal (

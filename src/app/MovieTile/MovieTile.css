@@ -6,7 +6,8 @@
     width: 342px;
     padding: 10px;
     cursor: pointer;
-    /*background-color: brown;*/
+    background-color: #232323;
+    color: #fff;
 }
 .movie-tile img {
     width: 100%;
@@ -18,7 +19,6 @@
     width: 36px;
     height: 36px;
     background-color: #232323;
-    color: #ffffff;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -30,7 +30,7 @@
     position: absolute;
     top: 0;
     right: 0;
-
+    color: #fff;
 }
 .movie-tile-info {
     margin-top: 30px;
@@ -45,6 +45,7 @@
     flex-grow: 3;
     line-height: 1.5;
     font-weight: 400;
+    opacity: 70%;
 }
 .movie-tile-info .release-year {
     font-size: 1.2em;
@@ -52,11 +53,14 @@
     border: 1px solid #ccc;
     padding: 5px 10px;
     border-radius: 4px;
+    opacity: 70%;
+}
+.movie-tile-info .genres {
+    opacity: 50%;
 }
 .movie-tile-context-menu {
     display: flex;
     flex-direction: column;
-    /* width: 190px; */
     background-color: #232323;
     color: #ffffff;
     font-family: 'Montserrat', sans-serif;
@@ -69,9 +73,11 @@
 }
 .movie-tile-context-menu li {
     padding: 10px;
+    opacity: 80%;
 }
 .movie-tile-context-menu li:hover {
     background-color: #f65261;
+    opacity: 100%;
 }
 .movie-tile-context-menu button {
     border: none;
