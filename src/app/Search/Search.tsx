@@ -1,4 +1,5 @@
 import React from "react";
+import "./Search.css";
 
 export interface SearchProps {
     /** The initial search query to populate the input field with. */
@@ -11,22 +12,24 @@ export interface SearchProps {
 function Search({ initialQuery, onSearch }: SearchProps){
     const [query, setQuery] = React.useState(initialQuery);
     return (
-        <div>
+        <div className="search-container">
             <h1>Find Your Movie</h1>
-            <input 
-                type="text"
-                defaultValue={initialQuery}
-                placeholder="What do you want to watch?" 
-                onKeyUp={(event: React.KeyboardEvent<HTMLInputElement>) => {
-                    if (event.key === "Enter") {
-                        onSearch(event.currentTarget.value);
-                    }
-                }}
-                onChange={(event) => {
-                    setQuery(event.target.value);
-                }}
-            />
-            <button onClick={() => onSearch(query)}>Search</button>
+            <div>
+                <input 
+                    type="text"
+                    defaultValue={initialQuery}
+                    placeholder="What do you want to watch?" 
+                    onKeyUp={(event: React.KeyboardEvent<HTMLInputElement>) => {
+                        if (event.key === "Enter") {
+                            onSearch(event.currentTarget.value);
+                        }
+                    }}
+                    onChange={(event) => {
+                        setQuery(event.target.value);
+                    }}
+                />
+                <button onClick={() => onSearch(query)}>Search</button>
+            </div>
         </div>
     );
 }

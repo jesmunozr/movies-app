@@ -1,23 +1,9 @@
 import React from "react";
 import { createPortal } from "react-dom";
 import "./MovieTile.css";
+import type { MovieTileProps } from "../MovieList/MovieList";
 
-export interface MovieTileProps {
-    /** The URL of the movie poster image */
-    imageUrl: string;
-    /** The title of the movie */
-    title: string;
-    /** The release date of the movie */
-    releaseDate: Date;
-    /** The genres of the movie */
-    genres: Array<string>;
-    /** The duration of the movie in minutes */
-    duration: number;
-    /** The description of the movie */
-    description: string;
-    /** The rating of the movie */
-    rating?: number;
-}
+
 
 export interface MovieTileComponentProps extends MovieTileProps {
     /** A function to be called when the movie tile is clicked. */
@@ -52,8 +38,10 @@ const MovieTile = ({
         <div data-testid="movie-tile-container" className="movie-tile" onClick={() => onClick({ imageUrl, title, releaseDate, genres, duration, description, rating })}>
             <img src={imageUrl} alt={`${title} poster`} />
             <div className="movie-tile-info">
-                <h2>{title}</h2>
-                {isValidDate && <p className="release-year">{releaseDate.getFullYear()}</p>}
+                <div>
+                    <h2>{title}</h2>
+                    {isValidDate && <p className="release-year">{releaseDate.getFullYear()}</p>}
+                </div>                
                 <p className="genres">{genres.join(", ")}</p>
             </div>
             <button onClick={openPortal}>&#8942;</button>
