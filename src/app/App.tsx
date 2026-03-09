@@ -2,6 +2,7 @@ import { useState } from 'react'
 import Counter from './Counter/Counter.tsx'
 import Search from './Search/Search.tsx'
 import Genre from './Genre/Genre.tsx'
+import './App.css';
 
 function App(){
   const initialQueryMovie: string = "The Matrix";

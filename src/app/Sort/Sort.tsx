@@ -18,7 +18,8 @@ export const Sort = ({ sortBy, onSortChange }: SortProps) => {
     return (
         <div className="sort-movies">
             <label htmlFor="sort">Sort by</label>
-            <select 
+            <select
+                data-testid="sort-select"
                 id="sort" 
                 value={selectedOption} 
                 onChange={(e) =>{ 
@@ -27,7 +28,7 @@ export const Sort = ({ sortBy, onSortChange }: SortProps) => {
                 }}>
                 {
                     (Object.keys(sortTypes) as Array<keyof typeof sortTypes>).map(key => {
-                        return <option key={key} value={sortTypes[key]}>{sortTypes[key].toUpperCase()}</option>
+                        return <option key={key} value={key}>{sortTypes[key].toUpperCase()}</option>
                     })
                 }
             </select>

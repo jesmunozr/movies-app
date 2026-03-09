@@ -19,7 +19,7 @@ export interface MovieTileProps {
     rating?: number;
 }
 
-interface MovieTileComponentProps extends MovieTileProps {
+export interface MovieTileComponentProps extends MovieTileProps {
     /** A function to be called when the movie tile is clicked. */
     onClick: (movie: MovieTileProps) => void;
 }
@@ -46,17 +46,19 @@ const MovieTile = ({
         setIsOpen(true);
     };
 
+    const isValidDate = releaseDate instanceof Date && !isNaN(releaseDate.getFullYear());
+
     return (
-        <div className="movie-tile" onClick={() => onClick({ imageUrl, title, releaseDate, genres, duration, description, rating })}>
+        <div data-testid="movie-tile-container" className="movie-tile" onClick={() => onClick({ imageUrl, title, releaseDate, genres, duration, description, rating })}>
             <img src={imageUrl} alt={`${title} poster`} />
             <div className="movie-tile-info">
                 <h2>{title}</h2>
-                <p className="release-year">{releaseDate.getFullYear()}</p>
+                {isValidDate && <p className="release-year">{releaseDate.getFullYear()}</p>}
                 <p className="genres">{genres.join(", ")}</p>
             </div>
             <button onClick={openPortal}>&#8942;</button>
             {isOpen && createPortal (
-                <div className="movie-tile-context-menu" style={{ position: 'absolute', top: coords.top, left: coords.left, width: `${contextMenuWidth}px` }}>
+                <div data-testid="context-menu" className="movie-tile-context-menu" style={{ position: 'absolute', top: coords.top, left: coords.left, width: `${contextMenuWidth}px` }}>
                     <button onClick={() => setIsOpen(false)}>&#88;</button>
                     <ul>
                         <li>Edit</li>
