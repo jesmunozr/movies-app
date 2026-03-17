@@ -1,0 +1,49 @@
+.sort-movies {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background-color: #232323;
+    color: #fff;
+}
+.sort-movies label {
+    text-transform: uppercase;
+    opacity: 0.6;
+    padding: 10px;
+}
+.sort-movies select,
+::picker(select){
+    appearance: base-select;
+}
+
+.sort-movies select {
+    background-color: #232323;
+    width: 170px;
+    border: none;
+    border-radius: 0;
+}
+.sort-movies select::picker-icon{
+    color: #f65261;
+    transition: 0.4s transform;
+}
+.sort-movies select:open::picker-icon {
+    transform: rotate(180deg);
+}
+::picker(select) {
+    background-color: #232323;
+    color: #fff;
+    border: none;
+}
+
+.sort-movies select option {
+    padding: 5px 10px;
+}
+
+.sort-movies select option:hover{
+    background-color: #f65261;
+}
+.sort-movies select option:checked{
+    background-color: #f65261;
+}
+.sort-movies select option::checkmark{
+    display: none;
+}

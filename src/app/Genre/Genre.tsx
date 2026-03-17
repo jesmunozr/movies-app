@@ -1,4 +1,14 @@
-function Genre({ genreList, selectedGenre, onSelect }: { genreList: Array<string>, selectedGenre: string, onSelect: (genre: string) => void }) {
+export interface GenreProps {
+    /** A list of genres to display in the dropdown. */
+    genreList: Array<string>;
+    /** The currently selected genre. */
+    selectedGenre: string;
+    /** A function to be called when the user selects a genre from the dropdown. */
+    onSelect: (genre: string) => void;
+}
+
+/** A genre selection component that allows users to choose a movie genre from a dropdown list. */
+function Genre({ genreList, selectedGenre, onSelect }: GenreProps) {
     const genresWithPlaceholder = ["", ...genreList];
     return (
         <div>
