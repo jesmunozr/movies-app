@@ -1,6 +1,5 @@
 import { useState, useEffect } from "react";
 import "./Search.css";
-import { use } from "chai";
 
 export interface SearchProps {
     /** The initial search query to populate the input field with. */
@@ -35,7 +34,6 @@ function Search({ initialQuery, onSearch }: SearchProps){
                 <input 
                     type="text"
                     defaultValue={initialQuery}
-                    value={query}
                     placeholder="What do you want to watch?" 
                     onKeyUp={(event: React.KeyboardEvent<HTMLInputElement>) => {
                         if (event.key === "Enter") {
