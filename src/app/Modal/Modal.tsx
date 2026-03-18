@@ -19,7 +19,7 @@ export default function Modal({ isOpen, title, onClose, children }: ModalProps) 
         <div className="modal-overlay" onClick={onClose}>
             <div className="modal-content" onClick={(e) => e.stopPropagation()}>
                 <div className="modal-tool-bar">
-                    <button className="close-button" onClick={onClose}>
+                    <button data-testid="modal-close-button" className="close-button" onClick={onClose}>
                         &times;
                     </button>
                 </div>

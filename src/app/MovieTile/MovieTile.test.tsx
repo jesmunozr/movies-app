@@ -2,7 +2,7 @@ import {render, screen, waitFor} from "@testing-library/react";
 import {expect, it, vi} from "vitest";
 import userEvent from "@testing-library/user-event";
 import MovieTile from "./MovieTile";
-import type { MovieTileComponentProps, MovieTileProps } from "./MovieTile";
+import type { MovieTileComponentProps } from "./MovieTile";
 
 describe("MovieTile tests", () => {
     const mockProps: MovieTileComponentProps = {
@@ -97,14 +97,15 @@ describe("MovieTile tests", () => {
     it("Calls the callback when the Movie Tile is clicked", async () => {
         const onClickSpy = vi.fn();
 
-        const mockMovie: MovieTileProps = {
+        const mockMovie: MovieTileComponentProps = {
             imageUrl: 'test.jpg',
             title: 'Inception',
             releaseDate: new Date('2010-07-16'),
             genres: ['Sci-Fi'],
             duration: 148,
             description: 'A thief who steals corporate secrets...',
-            rating: 8.8
+            rating: 8.8,
+            onClick: () => {}
         };
         
         render(<MovieTile {...mockMovie} onClick={onClickSpy}/>);
