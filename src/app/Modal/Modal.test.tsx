@@ -1,7 +1,6 @@
 import {render, screen, fireEvent} from '@testing-library/react';
 import {describe, expect, it, vi} from 'vitest';
 import Modal from './Modal';
-import userEvent from '@testing-library/user-event';
 
 describe("Modal", () => {
     it("renders the modal when isOpen is true", () => {

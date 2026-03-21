@@ -16,7 +16,7 @@ export default function Modal({ isOpen, title, onClose, children }: ModalProps) 
     if (!isOpen) return null;
 
     return createPortal(
-        <div className="modal-overlay" onClick={onClose}>
+        <div data-testid="modal-overlay" className="modal-overlay" onClick={onClose}>
             <div className="modal-content" onClick={(e) => e.stopPropagation()}>
                 <div className="modal-tool-bar">
                     <button data-testid="modal-close-button" className="close-button" onClick={onClose}>

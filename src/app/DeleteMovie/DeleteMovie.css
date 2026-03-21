@@ -1,0 +1,15 @@
+.delete-confirmation {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    gap: 20px;
+    justify-content: flex-end;
+    max-width: 450px;
+}
+.delete-confirmation p {
+    flex: 1 1 100%;
+    font-size: 1.2em;
+    margin: 0;
+    text-align: left;
+    margin-bottom: 40px;
+}
