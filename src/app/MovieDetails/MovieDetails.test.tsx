@@ -1,10 +1,10 @@
 import {render, screen} from "@testing-library/react";
 import {expect, it} from "vitest";
 import MovieDetails from "./MovieDetails";
-import type { MovieTileProps } from "../MovieTile/MovieTile";
+import type { MovieProps } from "../MovieList/MovieList";
 
 it("renders MovieDetail component with initial movie data", () =>{
-    const mockProps: MovieTileProps = {
+    const mockProps: MovieProps = {
         title: "Test Movie Title",
         description: "Test Movie Desciption",
         duration: 180,
@@ -22,14 +22,14 @@ it("renders MovieDetail component with initial movie data", () =>{
     const moviePoster = screen.getByRole("img") as HTMLImageElement;
 
     expect(moviePoster.src).toContain(mockProps.imageUrl);
-    expect(moviePoster.alt).toBe(mockProps.title.concat(" poster"));
+    expect(moviePoster.alt).toBe(mockProps.title?.concat(" poster"));
     
-    expect(screen.getByText(mockProps.genres.join(", "))).toBeInTheDocument();
-    expect(screen.getByText(mockProps.releaseDate.getFullYear())).toBeInTheDocument();
+    expect(screen.getByText(mockProps.genres!.join(", "))).toBeInTheDocument();
+    expect(screen.getByText(mockProps.releaseDate!.getFullYear())).toBeInTheDocument();
 });
 
 it("renders MovieDetail component with invalid release date and duration", () =>{
-    const mockProps: MovieTileProps = {
+    const mockProps: MovieProps = {
         title: "Test Movie Title",
         description: "Test Movie Desciption",
         duration: 0,
@@ -46,7 +46,7 @@ it("renders MovieDetail component with invalid release date and duration", () =>
 });
 
 it("renders MovieDetail component without rating property", () =>{
-    const mockProps: MovieTileProps = {
+    const mockProps: MovieProps = {
         title: "Test Movie Title",
         description: "Test Movie Desciption",
         duration: 0,

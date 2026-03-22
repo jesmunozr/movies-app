@@ -79,6 +79,7 @@
 .movie-tile-context-menu li {
     padding: 10px;
     opacity: 80%;
+    cursor: pointer;
 }
 .movie-tile-context-menu li:hover {
     background-color: #f65261;
