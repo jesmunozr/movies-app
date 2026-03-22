@@ -45,23 +45,22 @@ describe("MovieForm", () => {
         expect(screen.getByText("Description is required.")).toBeInTheDocument();
     });
 
-    // it("resets form data when reset button is clicked", async () => {
-    //     const initialData = {
-    //         title: "Test Movie",
-    //         description: "This is a test movie.",
-    //         duration: 120,
-    //         genres: ["Action", "Comedy"],
-    //         imageUrl: "test-movie.jpg",
-    //         releaseDate: new Date(2025, 11, 25),
-    //         rating: 8.0
-    //     };
-    //     render(<MovieForm {...initialData} onSubmit={() => {}} />);
+    it("resets form data when reset button is clicked", async () => {
+        const initialData = {
+            title: "Test Movie",
+            description: "This is a test movie.",
+            duration: 120,
+            genres: [{ value: "action", label: "Action" }, { value: "comedy", label: "Comedy" }],
+            imageUrl: "https://domain.com/test-movie.jpg",
+            releaseDate: new Date(2025, 11, 25),
+            rating: 8.0
+        };
+        render(<MovieForm {...initialData} onSubmit={() => {}} />);
         
-    //     const resetButton = screen.getByText("Reset");
-    //     fireEvent.click(resetButton);
+        const resetButton = screen.getByText("Reset");
+        fireEvent.click(resetButton);
 
-    //     const elements = await screen.findAllByDisplayValue("");
-    //     expect(elements).toHaveLength(6);
-    //     expect(screen.getByText("mm/dd/yyyy")).toBeInTheDocument();
-    // });
+        const elements = await screen.findAllByDisplayValue("");
+        expect(elements).toHaveLength(7);
+    });
 });
