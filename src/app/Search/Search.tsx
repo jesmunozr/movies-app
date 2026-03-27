@@ -5,11 +5,11 @@ export interface SearchProps {
     /** The initial search query to populate the input field with. */
     initialQuery: string;
     /** A function to be called when the user submits a search query. */
-    onSearch: (query: string) => void;
+    onSearch?: (query: string) => void;
 }
 
 /** A search component that allows users to input a movie title and submit a search query. */
-function Search({ initialQuery, onSearch }: SearchProps){
+function Search({ initialQuery, onSearch }: SearchProps) {
     const [query, setQuery] = useState(initialQuery);
     const [debouncedQuery, setDebouncedQuery] = useState(initialQuery);
 
@@ -36,7 +36,7 @@ function Search({ initialQuery, onSearch }: SearchProps){
                     defaultValue={initialQuery}
                     placeholder="What do you want to watch?" 
                     onKeyUp={(event: React.KeyboardEvent<HTMLInputElement>) => {
-                        if (event.key === "Enter") {
+                        if (event.key === "Enter" && onSearch) {
                             onSearch(query);
                         }
                     }}
@@ -44,7 +44,7 @@ function Search({ initialQuery, onSearch }: SearchProps){
                         setQuery(event.target.value);
                     }}
                 />
-                <button onClick={() => onSearch(query)}>Search</button>
+                <button onClick={() => onSearch && onSearch(query)}>Search</button>
             </div>
         </div>
     );

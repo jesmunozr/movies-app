@@ -15,16 +15,21 @@ header {
   background-color: #232323;
   overflow: hidden;
 }
-
 header::before {
   content: "";
   position: absolute;
   top: 0; left: 0; right: 0; bottom: 0;
-  background-image: url("../assets/header-bg.png");
+  background-image: url("../../assets/header-bg.png");
   background-size: cover;
   background-position: center;
   transform: scale(1.1);
   filter: blur(4px);
+}
+header.movie-selected {
+  background-color: #232323;
+}
+header.movie-selected::before {
+  background-image: none;
 }
 
 .app-title {
@@ -43,6 +48,20 @@ header::before {
 }
 .app-title .netflix-title {
   font-weight: 700;
+}
+
+.app-title .back-to-search {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+}
+.app-title .back-to-search svg{
+  width: 2em;
+  height: 2em;
+  fill: #f65261;
+  transform: rotate(90deg);
+  transform-origin: center;
 }
 header .header-content {
   width: 100%;
@@ -65,10 +84,10 @@ main {
 
 .sort-section {
   width: 100%;
-  display: flex;
-  justify-content: flex-end;
-  padding: 10px;
-  border-bottom: 2px solid #424242;
+  /* display: flex;
+  justify-content: space-between; */
+  border-bottom: 2px solid #080707;
+  margin-top: 10px;
 }
 
 .red-button {
@@ -97,4 +116,11 @@ main {
   padding: 10px 30px;
   font-weight: 500;
 
+}
+
+.movie-list {
+    width: 100%;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
 }

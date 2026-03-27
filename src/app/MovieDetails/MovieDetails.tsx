@@ -14,7 +14,7 @@ const MovieDetails = ({ imageUrl, title, releaseDate, genres, duration, descript
                     <h1>{title}</h1>
                     {rating && <p>{rating}</p>} 
                 </div>
-                <p className="movie-details-genres">{genres?.join(", ")}</p>
+                <p className="movie-details-genres">{genres?.map(genre => genre.label).join(", ")}</p>
                 <div className="movie-details-year-duration">
                     {isValidDate && <p>{releaseDate.getFullYear()}</p>}
                     {isValidDuration && <p>{toDurationString(duration!)}</p>}

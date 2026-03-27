@@ -1,4 +1,4 @@
-import type { MovieProps } from "../MovieList/MovieList";
+import type { MovieProps } from "../MovieListPage/MovieListPage";
 import "./DeleteMovie.css";
 
 interface DeleteMovieProps extends MovieProps {

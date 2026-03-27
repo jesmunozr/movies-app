@@ -1,7 +1,7 @@
 import React from "react";
 import { createPortal } from "react-dom";
 import "./MovieTile.css";
-import type { MovieProps } from "../MovieList/MovieList";
+import type { MovieProps } from "../MovieListPage/MovieListPage";
 import Modal from "../Modal/Modal";
 import MovieForm from "../MovieForm/MovieForm";
 import DeleteMovie from "../DeleteMovie/DeleteMovie";
@@ -96,7 +96,7 @@ const MovieTile = ({
                         onSubmit={(movie) => {
                             console.log(movie);
                             setIsModalOpen(false);
-                        }} 
+                        }}
                     />
                 ) : (
                     <DeleteMovie

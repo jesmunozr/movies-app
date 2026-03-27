@@ -1,4 +1,4 @@
-import React from "react";
+import { useState } from "react";
 import "./Sort.css";
 
 export interface SortProps {
@@ -14,14 +14,15 @@ export const Sort = ({ sortBy, onSortChange }: SortProps) => {
         title: "title",
         releaseDate: "Release Date"
     };
-    const [selectedOption, setSelectedOption] = React.useState(sortBy);
+    const [selectedOption, setSelectedOption] = useState(sortBy);
+
     return (
         <div className="sort-movies">
             <label htmlFor="sort">Sort by</label>
             <select
                 data-testid="sort-select"
-                id="sort" 
-                value={selectedOption} 
+                id="sort"
+                value={selectedOption}
                 onChange={(e) =>{ 
                     setSelectedOption(e.target.value);
                     onSortChange(e.target.value);

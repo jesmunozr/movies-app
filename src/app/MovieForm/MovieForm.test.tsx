@@ -1,6 +1,6 @@
 import {describe, it, expect} from "vitest"
 import MovieForm from "./MovieForm";
-import { type MovieProps } from "../MovieList/MovieList";
+import { type MovieProps } from "../MovieListPage/MovieListPage";
 import {render, screen, fireEvent} from "@testing-library/react";
 
 describe("MovieForm", () => {

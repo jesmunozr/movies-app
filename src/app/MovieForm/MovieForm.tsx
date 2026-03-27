@@ -1,5 +1,5 @@
-import type { MovieProps, MovieGenreProps } from "../MovieList/MovieList";
-import { useState } from "react";
+import { type MovieProps, type MovieGenreProps, GenresContext } from '../MovieListPage/MovieListPage.tsx';
+import { useEffect, useState, useContext } from "react";
 import Select, { type ActionMeta, type CSSObjectWithLabel, type GroupBase, type MultiValue, type OptionProps, type StylesConfig } from "react-select";
 import "./MovieForm.css";
 
@@ -19,17 +19,6 @@ type Errors = {
 }
 
 const MovieForm = ({imageUrl, title, releaseDate, genres, duration, description, rating, onSubmit }: MovieFormProps) => {
-    const genreOptions: MovieGenreProps[] = [
-        { value: "action", label: "Action" },
-        { value: "adventure", label: "Adventure" },
-        { value: "comedy", label: "Comedy" },
-        { value: "drama", label: "Drama" },
-        { value: "horror", label: "Horror" },
-        { value: "romance", label: "Romance" },
-        { value: "sci-fi", label: "Sci-Fi" },
-        { value: "thriller", label: "Thriller" },
-        { value: "fantasy", label: "Fantasy" },
-    ];
     const [formData, setFormData] = useState<MovieProps>(
     { 
         imageUrl: imageUrl, 
@@ -41,16 +30,18 @@ const MovieForm = ({imageUrl, title, releaseDate, genres, duration, description,
         rating: rating 
     });
     const [errors, setErrors] = useState<Errors>({});
-    const [selectedGenres, setSelectedGenres] = useState<MovieGenreProps[]>(
-        () => {
-            if (genres && genres.length > 0) {
-                return genreOptions.filter(
-                    option => genres.some(genre => genre.value === option.value)
-                )
-            }
-            return [];
+    const [selectedGenres, setSelectedGenres] = useState<MovieGenreProps[]>([]);
+    const genresList = useContext(GenresContext);
+
+    useEffect(() => {
+        /* If genres are provided as props, set the selected genres based on the provided genres and the genres list. This ensures that the correct genres are selected when editing an existing movie. */
+        if (genres && genres.length > 0) {
+            const selectedGenres = genresList?.filter(
+                option => genres.some(genre => genre.value === option.value)
+            );
+            setSelectedGenres(selectedGenres || []);
         }
-    );
+    }, []);
 
     /** Handle input change */
     const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
@@ -255,7 +246,7 @@ const MovieForm = ({imageUrl, title, releaseDate, genres, duration, description,
             <label className="col-left">
                 Genres
                 <Select 
-                    options={genreOptions} 
+                    options={genresList} 
                     isMulti 
                     placeholder="Select Genres" 
                     onChange={onGenreChange} 
