@@ -1,14 +1,14 @@
 import {render, screen} from "@testing-library/react";
 import {expect, it} from "vitest";
 import MovieDetails from "./MovieDetails";
-import type { MovieProps } from "../MovieList/MovieList";
+import type { MovieProps } from "../MovieListPage/MovieListPage";
 
 it("renders MovieDetail component with initial movie data", () =>{
     const mockProps: MovieProps = {
         title: "Test Movie Title",
         description: "Test Movie Desciption",
         duration: 180,
-        genres: ["genre1", "genre2"],
+        genres: [{ value: "genre1", label: "Genre 1" }, { value: "genre2", label: "Genre 2" }],
         imageUrl: "movie-poster.jpg",
         releaseDate: new Date(2026, 3, 7),
         rating: 8.5,
@@ -24,7 +24,7 @@ it("renders MovieDetail component with initial movie data", () =>{
     expect(moviePoster.src).toContain(mockProps.imageUrl);
     expect(moviePoster.alt).toBe(mockProps.title?.concat(" poster"));
     
-    expect(screen.getByText(mockProps.genres!.join(", "))).toBeInTheDocument();
+    expect(screen.getByText(mockProps.genres!.map(g => g.label).join(", "))).toBeInTheDocument();
     expect(screen.getByText(mockProps.releaseDate!.getFullYear())).toBeInTheDocument();
 });
 
@@ -33,7 +33,7 @@ it("renders MovieDetail component with invalid release date and duration", () =>
         title: "Test Movie Title",
         description: "Test Movie Desciption",
         duration: 0,
-        genres: ["genre1", "genre2"],
+        genres: [{ value: "genre1", label: "Genre 1" }, { value: "genre2", label: "Genre 2" }],
         imageUrl: "movie-poster.jpg",
         releaseDate: new Date("yyyy-mm-dd"),
         rating: 8.5,
@@ -50,7 +50,7 @@ it("renders MovieDetail component without rating property", () =>{
         title: "Test Movie Title",
         description: "Test Movie Desciption",
         duration: 0,
-        genres: ["genre1", "genre2"],
+        genres: [{ value: "genre1", label: "Genre 1" }, { value: "genre2", label: "Genre 2" }],
         imageUrl: "movie-poster.jpg",
         releaseDate: new Date(2026, 3, 7),
     }
