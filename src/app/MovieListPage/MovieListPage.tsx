@@ -51,11 +51,11 @@ const genresList: MovieGenreProps[] = [
 
 export const GenresContext = createContext<MovieGenreProps[]>(genresList);
 
-function MovieListPage(){
+function MovieListPage({initialMovies = []}: {initialMovies?: MovieProps[]}) {
   const [searchQuery, setSearchQuery] = useState("");
   const [sortBy, setSortBy] = useState("title");
   const [activeGenre, setActiveGenre] = useState<MovieGenreProps>({value: "all", label: "All"});
-  const [movies, setMovies] = useState<MovieProps[]>([]);
+  const [movies, setMovies] = useState<MovieProps[]>(initialMovies);
   const [selectedMovie, setSelectedMovie] = useState<MovieProps | null>(null);
 
   /** This ref is used to reference the header element in the DOM. It allows us to manipulate the header's CSS classes based on whether a movie is selected or not. */
