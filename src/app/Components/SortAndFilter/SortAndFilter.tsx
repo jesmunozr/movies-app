@@ -1,21 +1,21 @@
 import { useRef, useState } from "react";
 import GenreFilter from "../GenreFilter/GenreFilter";
 import Sort from "../Sort/Sort";
-import type { MovieGenreProps } from "../MovieListPage/MovieListPage";
 import "./SortAndFilter.css";
+import type { MovieGenre } from "@/domain/models/Movie";
 
 interface SortAndFilterProps {
-    genresList: MovieGenreProps[];
-    onSelectedGenre?: (genre: MovieGenreProps) => void;
+    genresList: MovieGenre[];
+    onSelectedGenre?: (genre: MovieGenre) => void;
     onSortChange?: (sortBy: string) => void;
 }
 
 const SortAndFilter = ({genresList, onSelectedGenre, onSortChange}: SortAndFilterProps) => {
     const selectedGenreRef = useRef<HTMLDivElement | null>(null);
-    const [activeGenre, setActiveGenre] = useState<MovieGenreProps>({value: "all", label: "All"});
+    const [activeGenre, setActiveGenre] = useState<MovieGenre>({value: "all", label: "All"});
     const [sortBy, setSortBy] = useState<string>("title");
 
-    const handleGenreChange = (genre: MovieGenreProps) => {
+    const handleGenreChange = (genre: MovieGenre) => {
         const previousGenre = activeGenre;
         const previousGenreIndex = genresList.findIndex(g => g.value === previousGenre.value) + 1;
         const newGenreIndex = genresList.findIndex(g => g.value === genre.value) + 1;

@@ -1,11 +1,12 @@
-import { type MovieProps, type MovieGenreProps, GenresContext } from '../MovieListPage/MovieListPage.tsx';
+import { GenresContext } from '../MovieListPage/MovieListPage.tsx';
 import { useEffect, useState, useContext } from "react";
-import Select, { type ActionMeta, type CSSObjectWithLabel, type GroupBase, type MultiValue, type OptionProps, type StylesConfig } from "react-select";
+import Select, { type ActionMeta, type CSSObjectWithLabel, type GroupBase, type MultiValue, type StylesConfig } from "react-select";
 import "./MovieForm.css";
+import type { Movie, MovieGenre } from '@/domain/models/Movie.ts';
 
-interface MovieFormProps extends MovieProps {
+interface MovieFormProps extends Movie {
     /** A function to be called when the form is submitted. */
-    onSubmit: (movie: MovieProps) => void;
+    onSubmit: (movie: Movie) => void;
 }
 
 type Errors = {
@@ -19,7 +20,7 @@ type Errors = {
 }
 
 const MovieForm = ({imageUrl, title, releaseDate, genres, duration, description, rating, onSubmit }: MovieFormProps) => {
-    const [formData, setFormData] = useState<MovieProps>(
+    const [formData, setFormData] = useState<Movie>(
     { 
         imageUrl: imageUrl, 
         title: title, 
@@ -30,7 +31,7 @@ const MovieForm = ({imageUrl, title, releaseDate, genres, duration, description,
         rating: rating 
     });
     const [errors, setErrors] = useState<Errors>({});
-    const [selectedGenres, setSelectedGenres] = useState<MovieGenreProps[]>([]);
+    const [selectedGenres, setSelectedGenres] = useState<MovieGenre[]>([]);
     const genresList = useContext(GenresContext);
 
     useEffect(() => {
@@ -99,7 +100,7 @@ const MovieForm = ({imageUrl, title, releaseDate, genres, duration, description,
     };
 
     /** Validate form data */
-    const validate = (data: MovieProps) => {
+    const validate = (data: Movie) => {
         const newErrors: Errors = {};
 
         /** Validate title */
@@ -146,12 +147,12 @@ const MovieForm = ({imageUrl, title, releaseDate, genres, duration, description,
     };
 
     /** Handle genre selection change */
-    const onGenreChange = (option: MultiValue<MovieGenreProps>, actionMeta: ActionMeta<{value: string, label: string}>) => {
+    const onGenreChange = (option: MultiValue<MovieGenre>, actionMeta: ActionMeta<{value: string, label: string}>) => {
         const selectedValues = option;
-        setSelectedGenres(option as MovieGenreProps[]);
+        setSelectedGenres(option as MovieGenre[]);
         setFormData(prev => ({
             ...prev,
-            genres: selectedValues as MovieGenreProps[]
+            genres: selectedValues as MovieGenre[]
         }));
     };
 

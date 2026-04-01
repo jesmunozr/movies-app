@@ -3,7 +3,7 @@
     display: flex;
     flex-direction: column;
     width: 342px;
-    padding: 10px;
+    padding: 0;
     cursor: pointer;
     background-color: #232323;
     color: #fff;
@@ -42,6 +42,7 @@
     display: flex;
     width: 100%;
     justify-content: space-between;
+    align-items: flex-start;
 }
 .movie-tile-info div h2 {
     font-size: 1.5em;

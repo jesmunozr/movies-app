@@ -1,35 +1,19 @@
-import { useState, useRef, useEffect, createContext } from 'react'
+import { useState, useRef, createContext, useEffect } from 'react'
 import Search from '../Search/Search.tsx'
 import './MovieListPage.css';
 import AddMovie from '../AddMovie/AddMovie.tsx';
 import MovieDetails from '../MovieDetails/MovieDetails.tsx';
 import MovieTile from '../MovieTile/MovieTile.tsx';
 import SortAndFilter from '../SortAndFilter/SortAndFilter.tsx';
+import { useMovies } from '@/Services/apiClient.ts';
+import type { Movie, MovieGenre } from '@/domain/models/Movie.ts';
+import { mapMovies } from '@/app/mappers/movieMapper.ts';
+import type { ApiRequestParams } from '@/api/models/Movie.ts';
 
-export interface MovieProps {
-    /** The URL of the movie poster image */
-    imageUrl?: string;
-    /** The title of the movie */
-    title?: string;
-    /** The release date of the movie */
-    releaseDate?: Date;
-    /** The genres of the movie */
-    genres?: Array<MovieGenreProps>;
-    /** The duration of the movie in minutes */
-    duration?: number;
-    /** The description of the movie */
-    description?: string;
-    /** The rating of the movie */
-    rating?: number;
-};
 
-export interface MovieGenreProps {
-    value: string;
-    label: string;
-};
 
 /** A list of available genres for movies. This is used to populate the genre selection dropdown in the form. */
-const genresList: MovieGenreProps[] = [
+const genresList: MovieGenre[] = [
   { value: "action", label: "Action" },
   { value: "adventure", label: "Adventure" },
   { value: "animation", label: "Animation" },
@@ -49,21 +33,52 @@ const genresList: MovieGenreProps[] = [
   { value: "western", label: "Western" }
 ];
 
-export const GenresContext = createContext<MovieGenreProps[]>(genresList);
+export const GenresContext = createContext<MovieGenre[]>(genresList);
 
-function MovieListPage({initialMovies = []}: {initialMovies?: MovieProps[]}) {
+function MovieListPage({initialMovies = []}: {initialMovies?: Movie[]}) {
   const [searchQuery, setSearchQuery] = useState("");
   const [sortBy, setSortBy] = useState("title");
-  const [activeGenre, setActiveGenre] = useState<MovieGenreProps>({value: "all", label: "All"});
-  const [movies, setMovies] = useState<MovieProps[]>(initialMovies);
-  const [selectedMovie, setSelectedMovie] = useState<MovieProps | null>(null);
+  const [activeGenre, setActiveGenre] = useState<MovieGenre>({value: "all", label: "All"});
+  const [movies, setMovies] = useState<Movie[]>(initialMovies);
+  const [selectedMovie, setSelectedMovie] = useState<Movie | null>(null);
+  const [apiRequestresParams, setApiRequestParams] = useState<ApiRequestParams>({
+    sortOrder: 'desc',
+    sortBy: 'title',
+    searchBy: 'title',
+    offset: 0,
+    limit: 10
+  });
+  const { content, isLoading, isError } = useMovies(apiRequestresParams);
+
 
   /** This ref is used to reference the header element in the DOM. It allows us to manipulate the header's CSS classes based on whether a movie is selected or not. */
   const headerRef = useRef<HTMLHeadingElement | null>(null);
-  // const selectedGenreRef = useRef<HTMLDivElement | null>(null);
+
+  useEffect(() => {
+    if (!isLoading && !isError && content?.data) {
+      const mappedMovies = mapMovies(content.data);
+      setMovies(mappedMovies);
+    }
+  }, [content, isLoading, isError]);
+
+  useEffect(() => {
+    const updateApiRequestParams = () => {
+      setApiRequestParams((prev) => {
+        return {
+          ...prev,
+          search: searchQuery ? searchQuery : undefined,
+          sortBy: sortBy as 'title' | 'releaseDate',
+          filter: activeGenre.value === "all" ? undefined : [activeGenre.value],
+        };
+      });
+    };
+
+    updateApiRequestParams();
+
+  }, [searchQuery, sortBy, activeGenre]);
 
   /** This function is responsible for handling the selection of a movie. It updates the selectedMovie state and adds a CSS class to the header element if a movie is selected. If no movie is selected, it removes the CSS class from the header element. */
-  const handleSelectedMovie = (movie: MovieProps | null) => {
+  const handleSelectedMovie = (movie: Movie | null) => {
     console.log("Selected movie: ", movie);
     setSelectedMovie(movie);
     if (headerRef.current && movie) {
@@ -74,7 +89,7 @@ function MovieListPage({initialMovies = []}: {initialMovies?: MovieProps[]}) {
     }
   };
 
-  const handleGenreChange = (genre: MovieGenreProps) => {
+  const handleGenreChange = (genre: MovieGenre) => {
     setActiveGenre(genre);
   }
 
@@ -82,34 +97,19 @@ function MovieListPage({initialMovies = []}: {initialMovies?: MovieProps[]}) {
     setSortBy(sort);
   }
 
-  useEffect(() => {
-    setMovies([
-        {
-            imageUrl: "https://m.media-amazon.com/images/I/71l23P-Lm4L._AC_UF894,1000_QL80_.jpg",
-            title: "Movie 1",
-            releaseDate: new Date("2022-01-01"),
-            genres: [
-                { value: "action", label: "Action" },
-                { value: "adventure", label: "Adventure" }
-            ],
-            duration: 120,
-            description: "Description of Movie 1",
-            rating: 8.5
-        },
-        {
-            imageUrl: "https://images.squarespace-cdn.com/content/v1/51b3dc8ee4b051b96ceb10de/1526316550228-B0K75I48RK0Z7AN3CLP8/promo-teaser-and-poster-for-the-queen-biopic-bohemian-rhapsody",
-            title: "Movie 2",
-            releaseDate: new Date("2023-01-01"),
-            genres: [
-                { value: "drama", label: "Drama" },
-                { value: "romance", label: "Romance" }
-            ],
-            duration: 110,
-            description: "Description of Movie 2",
-            rating: 7.8
-        }
-    ]);
-  }, []);
+  const renderMovies = () => {
+    if (isLoading) {
+      return <p>Loading movies...</p>;
+    }
+    if (isError) {
+      console.error("Error fetching movies: ", isError);
+      return <p>Error loading movies.</p>;
+    }
+    
+    return movies.map((movie) => (
+      <MovieTile key={movie.id} {...movie} onClick={handleSelectedMovie} />
+    ));
+  };
 
   return (
     <>
@@ -149,9 +149,7 @@ function MovieListPage({initialMovies = []}: {initialMovies?: MovieProps[]}) {
         </section>
         <section className="movie-list">
           <GenresContext.Provider value={genresList}>
-            {movies.map((movie, index) => (
-              <MovieTile key={index} {...movie} onClick={handleSelectedMovie} />
-            ))}
+          { renderMovies()}
           </GenresContext.Provider>
         </section>
       </main>

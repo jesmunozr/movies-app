@@ -1,9 +1,9 @@
-import type { MovieProps } from "../MovieList/MovieList";
-import { toDurationString } from "../../utils/movieData";
+import type { Movie } from "@/domain/models/Movie";
+import { toDurationString } from "@/shared/movieData";
 import "./MovieDetails.css";
 
 /** A component that displays detailed information about a movie, including its poster, title, release year, genres, duration, description and rating. */
-const MovieDetails = ({ imageUrl, title, releaseDate, genres, duration, description, rating }: MovieProps) => {
+const MovieDetails = ({ imageUrl, title, releaseDate, genres, duration, description, rating }: Movie) => {
     const isValidDate = releaseDate instanceof Date && !isNaN(releaseDate.getFullYear());
     const isValidDuration = duration ? duration > 0 : false;
     return (

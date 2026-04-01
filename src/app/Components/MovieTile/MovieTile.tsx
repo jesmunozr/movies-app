@@ -1,14 +1,14 @@
 import React from "react";
 import { createPortal } from "react-dom";
 import "./MovieTile.css";
-import type { MovieProps } from "../MovieListPage/MovieListPage";
+import type { Movie } from "@/domain/models/Movie";
 import Modal from "../Modal/Modal";
 import MovieForm from "../MovieForm/MovieForm";
 import DeleteMovie from "../DeleteMovie/DeleteMovie";
 
-export interface MovieTileComponentProps extends MovieProps {
+export interface MovieTileComponentProps extends Movie {
     /** A function to be called when the movie tile is clicked. */
-    onClick: (movie: MovieProps) => void;
+    onClick: (movie: Movie) => void;
 }
 
 /** A component that displays a movie tile with its poster, title, release date year and genres.
@@ -59,7 +59,7 @@ const MovieTile = ({
 
     return (
         <div data-testid="movie-tile-container" className="movie-tile" onClick={() => onClick({ imageUrl, title, releaseDate, genres, duration, description, rating })}>
-            <img src={imageUrl} alt={`${title} poster`} />
+            <img src={imageUrl} alt={`${title}`} />
             <div className="movie-tile-info">
                 <div>
                     <h2>{title}</h2>

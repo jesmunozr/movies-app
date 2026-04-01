@@ -1,7 +1,7 @@
-import type { MovieProps } from "../MovieListPage/MovieListPage";
+import type { Movie } from "@/domain/models/Movie";
 import "./DeleteMovie.css";
 
-interface DeleteMovieProps extends MovieProps {
+interface DeleteMovieProps extends Movie {
   onDelete: () => void;
 }
 

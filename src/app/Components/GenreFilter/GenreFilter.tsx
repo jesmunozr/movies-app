@@ -1,18 +1,18 @@
 import { useState } from 'react';
-import { type MovieGenreProps } from '../MovieListPage/MovieListPage.tsx';
 import "./GenreFilter.css";
+import type { MovieGenre } from '@/domain/models/Movie.ts';
 
 export interface GenreFilterProps {
-    genres: MovieGenreProps[];
-    onChanged?: (genre: MovieGenreProps) => void;
+    genres: MovieGenre[];
+    onChanged?: (genre: MovieGenre) => void;
 }
 
 const GenreFilter = (
     {genres, onChanged}: GenreFilterProps
 ) => {
-    const [selectedGenre, setSelectedGenre] = useState<MovieGenreProps>({value: "all", label: "All"});
+    const [selectedGenre, setSelectedGenre] = useState<MovieGenre>({value: "all", label: "All"});
 
-    const handleGenreChange = (genre: MovieGenreProps) => {
+    const handleGenreChange = (genre: MovieGenre) => {
         setSelectedGenre(genre);
         onChanged && onChanged(genre);
     };
