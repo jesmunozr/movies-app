@@ -25,7 +25,7 @@ export interface ApiMovie {
 
 export interface ApiPageResponse {
     data: ApiMovie[];
-    total: number;
+    totalAmount: number;
     offset: number;
     limit: number;
 }
@@ -34,4 +34,6 @@ export interface ApiResponse {
     content: ApiPageResponse | undefined;
     isLoading: boolean;
     isError: Error | undefined;
+    loadMore?: () => void;
+    isReachingEnd?: boolean;
 }

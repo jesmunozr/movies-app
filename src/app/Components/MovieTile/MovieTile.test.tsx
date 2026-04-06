@@ -23,7 +23,7 @@ describe("MovieTile tests", () => {
         const moviePoster = screen.getByRole("img") as HTMLImageElement;
 
         expect(moviePoster.src).toContain(mockProps.imageUrl);
-        expect(moviePoster.alt).toBe(mockProps.title!.concat(" poster"));
+        expect(moviePoster.alt).toBe(mockProps.title!);
         expect(screen.getByText(mockProps.genres!.map(genre => genre.label).join(", "))).toBeInTheDocument();
         expect(screen.getByText(mockProps.releaseDate!.getFullYear().toString())).toBeInTheDocument();
     });
@@ -48,7 +48,7 @@ describe("MovieTile tests", () => {
         const moviePoster = screen.getByRole("img") as HTMLImageElement;
 
         expect(moviePoster.src).toContain(mockPropsInvalid.imageUrl);
-        expect(moviePoster.alt).toBe(mockPropsInvalid.title!.concat(" poster"));
+        expect(moviePoster.alt).toBe(mockPropsInvalid.title!);
         expect(screen.getByText(mockPropsInvalid.genres!.map(genre => genre.label).join(", "))).toBeInTheDocument();
 
     });

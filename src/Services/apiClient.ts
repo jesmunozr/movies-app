@@ -1,11 +1,13 @@
 import useSWR from "swr";
 import { config } from "@/config/config";
 import type { ApiPageResponse, ApiRequestParams, ApiResponse } from "@/api/models/Movie";
+import useSWRInfinite from "swr/infinite";
+import { useMemo } from "react";
 
-async function getMovies({path, params}: {path: string, params: ApiRequestParams}): Promise<ApiPageResponse> {
+const fetcher = ([_, params]: [string, ApiRequestParams]) => getMovies(params);
 
+const buildMoviesUrl = (params: ApiRequestParams) => {
     const queryParams = new URLSearchParams();
-
     if (params.search) {
         queryParams.append('search', params.search);
     }
@@ -20,20 +22,23 @@ async function getMovies({path, params}: {path: string, params: ApiRequestParams
     queryParams.append("offset", params.offset.toString());
     queryParams.append("limit", params.limit.toString());
 
-    const url = `${config.apiBaseUrl}${path}?${queryParams.toString()}`;
+    return `${config.apiBaseUrl}/movies?${queryParams.toString()}`;
+};
 
-    const response = await fetch(url);
+async function getMovies(params: ApiRequestParams): Promise<ApiPageResponse> {
 
-    if (!response.ok) {
-        throw new Error(`Failed to fetch movies: ${response.statusText}`);
+    try{
+        const response = await fetch(buildMoviesUrl(params));
+        return response.json();
+    }catch (error) {
+        console.error("Error fetching movies:", error);
+        throw error;
     }
-
-    return (await response.json()) as ApiPageResponse;
 }
 
 function useMovies(apiRequestParams: ApiRequestParams) {
 
-    const { data, error, isLoading } = useSWR({path: '/movies', params: apiRequestParams}, getMovies);
+    const { data, error, isLoading } = useSWR(['movies', apiRequestParams], fetcher);
 
     const apiResponse: ApiResponse = {
         content: data,
@@ -44,4 +49,51 @@ function useMovies(apiRequestParams: ApiRequestParams) {
     return apiResponse;
 }
 
-export { useMovies };
+function useMoviesInfinite(params: Omit<ApiRequestParams, 'offset' | 'limit'>) {
+    const PAGE_SIZE = 12;
+
+    const stableParams = useMemo(() => params, [params]);
+
+    const getKey = (pageIndex: number, previousPageData: ApiPageResponse | null) => {
+        if (previousPageData && previousPageData.data.length < PAGE_SIZE) return null; // No more data to fetch
+        return [
+            'movies',
+            {
+                ...stableParams,
+                offset: pageIndex * PAGE_SIZE,
+                limit: PAGE_SIZE,
+            }
+        ];
+    };
+
+    const { data, error, size, setSize, isLoading } = useSWRInfinite(getKey, fetcher, { 
+        revalidateFirstPage: false,
+        shouldRetryOnError: false,
+        revalidateOnFocus: false,
+    });
+
+    const isReachingEnd = data && (data[data.length - 1]?.data.length < PAGE_SIZE);
+    const isLoadingMode = isLoading || (data && typeof data[size - 1] === "undefined");
+    const loadMode = () => {
+        if (!isLoadingMode && !isReachingEnd) {
+            setSize(size + 1);
+        }
+    }
+
+    const apiResponse: ApiResponse = {
+        content: data ? {
+            data: data.flatMap(page => page.data),
+            totalAmount: data[0]?.totalAmount || 0,
+            offset: (size - 1) * PAGE_SIZE,
+            limit: PAGE_SIZE,
+        } : undefined,
+        isLoading,
+        isError: error,
+        loadMore: loadMode,
+        isReachingEnd: isReachingEnd,
+    };
+
+    return apiResponse;
+}
+
+export { useMovies, useMoviesInfinite };

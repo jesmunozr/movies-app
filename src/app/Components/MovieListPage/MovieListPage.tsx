@@ -5,7 +5,7 @@ import AddMovie from '../AddMovie/AddMovie.tsx';
 import MovieDetails from '../MovieDetails/MovieDetails.tsx';
 import MovieTile from '../MovieTile/MovieTile.tsx';
 import SortAndFilter from '../SortAndFilter/SortAndFilter.tsx';
-import { useMovies } from '@/Services/apiClient.ts';
+import { useMovies, useMoviesInfinite } from '@/Services/apiClient.ts';
 import type { Movie, MovieGenre } from '@/domain/models/Movie.ts';
 import { mapMovies } from '@/app/mappers/movieMapper.ts';
 import type { ApiRequestParams } from '@/api/models/Movie.ts';
@@ -35,11 +35,10 @@ const genresList: MovieGenre[] = [
 
 export const GenresContext = createContext<MovieGenre[]>(genresList);
 
-function MovieListPage({initialMovies = []}: {initialMovies?: Movie[]}) {
+function MovieListPage() {
   const [searchQuery, setSearchQuery] = useState("");
   const [sortBy, setSortBy] = useState("title");
   const [activeGenre, setActiveGenre] = useState<MovieGenre>({value: "all", label: "All"});
-  const [movies, setMovies] = useState<Movie[]>(initialMovies);
   const [selectedMovie, setSelectedMovie] = useState<Movie | null>(null);
   const [apiRequestresParams, setApiRequestParams] = useState<ApiRequestParams>({
     sortOrder: 'desc',
@@ -48,18 +47,11 @@ function MovieListPage({initialMovies = []}: {initialMovies?: Movie[]}) {
     offset: 0,
     limit: 10
   });
-  const { content, isLoading, isError } = useMovies(apiRequestresParams);
+  const { content, loadMore, isReachingEnd, isLoading, isError } = useMoviesInfinite(apiRequestresParams);
 
 
   /** This ref is used to reference the header element in the DOM. It allows us to manipulate the header's CSS classes based on whether a movie is selected or not. */
   const headerRef = useRef<HTMLHeadingElement | null>(null);
-
-  useEffect(() => {
-    if (!isLoading && !isError && content?.data) {
-      const mappedMovies = mapMovies(content.data);
-      setMovies(mappedMovies);
-    }
-  }, [content, isLoading, isError]);
 
   useEffect(() => {
     const updateApiRequestParams = () => {
@@ -76,6 +68,18 @@ function MovieListPage({initialMovies = []}: {initialMovies?: Movie[]}) {
     updateApiRequestParams();
 
   }, [searchQuery, sortBy, activeGenre]);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      if (isLoading || isReachingEnd) return;
+      if (window.innerHeight + window.scrollY >= document.body.offsetHeight - 500) {
+        loadMore!();
+      }
+    };
+
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, [loadMore]);
 
   /** This function is responsible for handling the selection of a movie. It updates the selectedMovie state and adds a CSS class to the header element if a movie is selected. If no movie is selected, it removes the CSS class from the header element. */
   const handleSelectedMovie = (movie: Movie | null) => {
@@ -98,13 +102,15 @@ function MovieListPage({initialMovies = []}: {initialMovies?: Movie[]}) {
   }
 
   const renderMovies = () => {
-    if (isLoading) {
-      return <p>Loading movies...</p>;
-    }
     if (isError) {
-      console.error("Error fetching movies: ", isError);
-      return <p>Error loading movies.</p>;
+      return <div>Failed to load movies. Please try again later.</div>;
     }
+    
+    if (isLoading && !content) {
+      return <div>Loading movies...</div>;
+    }
+    
+    const movies = mapMovies(content?.data || []);
     
     return movies.map((movie) => (
       <MovieTile key={movie.id} {...movie} onClick={handleSelectedMovie} />
@@ -153,6 +159,14 @@ function MovieListPage({initialMovies = []}: {initialMovies?: Movie[]}) {
           </GenresContext.Provider>
         </section>
       </main>
+      <footer>
+        <div className="footer-content">
+          <h1>
+            <span className="netflix-title">netflix</span>
+            <span>roulette</span>
+          </h1>
+        </div>
+      </footer>
     </>
   );}
 

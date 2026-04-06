@@ -12,14 +12,13 @@ header {
   display: flex;
   flex-direction: row;
   flex-wrap: wrap;
-  background-color: #232323;
   overflow: hidden;
 }
 header::before {
   content: "";
   position: absolute;
   top: 0; left: 0; right: 0; bottom: 0;
-  background-image: url("../../assets/header-bg.png");
+  background-image: url("../../../assets/header-bg.png");
   background-size: cover;
   background-position: center;
   transform: scale(1.1);
@@ -32,6 +31,7 @@ header.movie-selected::before {
   background-image: none;
 }
 
+/* .footer-content, */
 .app-title {
   width: 100%;
   color: #f65261;
@@ -41,11 +41,13 @@ header.movie-selected::before {
   display: flex;
   justify-content: space-between;
 }
+/* .footer-content h1, */
 .app-title h1 {
   margin: 0;
   font-weight: 300;
   font-size: 1.5em;
 }
+/* .footer-content .netflix-title, */
 .app-title .netflix-title {
   font-weight: 700;
 }
@@ -84,8 +86,6 @@ main {
 
 .sort-section {
   width: 100%;
-  /* display: flex;
-  justify-content: space-between; */
   border-bottom: 2px solid #080707;
   margin-top: 10px;
 }
@@ -123,4 +123,18 @@ main {
     display: flex;
     flex-wrap: wrap;
     gap: 20px;
+}
+footer {
+  width: 100%;
+  background-color: #424242;
+  display: flex;
+  justify-content: center;
+  color: #f65261;
+}
+footer h1 {
+  font-weight: 300;
+  font-size: 1.5em;
+}
+footer .netflix-title {
+  font-weight: 700;
 }
