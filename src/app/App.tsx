@@ -3,6 +3,7 @@ import Search from './Search/Search.tsx'
 import './App.css';
 import Sort from './Sort/Sort.tsx';
 import MovieList from './MovieList/MovieList.tsx';
+import AddMovie from './AddMovie/AddMovie.tsx';
 
 function App(){
   const initialQueryMovie: string = "";
@@ -16,6 +17,7 @@ function App(){
             <span className="netflix-title">netflix</span>
             <span>roulette</span>
           </h1>
+          <AddMovie />
         </div>
         <div className="header-content">
           <Search 

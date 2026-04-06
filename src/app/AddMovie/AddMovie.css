@@ -1,0 +1,9 @@
+.add-movie-button {
+    padding: 10px 20px;
+    font-size: 1em;
+    background-color: rgba(96, 96, 96, 0.5);
+    color: #f56261;
+    border: none;
+    cursor: pointer;
+    text-transform: uppercase;
+}
