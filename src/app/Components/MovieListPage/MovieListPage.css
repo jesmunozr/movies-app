@@ -1,0 +1,140 @@
+#root {
+  width: 1200px;
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  margin: 54px auto;
+}
+
+header {
+  position: relative;
+  width: 100%;
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  overflow: hidden;
+}
+header::before {
+  content: "";
+  position: absolute;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background-image: url("../../../assets/header-bg.png");
+  background-size: cover;
+  background-position: center;
+  transform: scale(1.1);
+  filter: blur(4px);
+}
+header.movie-selected {
+  background-color: #232323;
+}
+header.movie-selected::before {
+  background-image: none;
+}
+
+/* .footer-content, */
+.app-title {
+  width: 100%;
+  color: #f65261;
+  padding: 20px;
+  background-color: #232323e1;
+  z-index: 1;
+  display: flex;
+  justify-content: space-between;
+}
+/* .footer-content h1, */
+.app-title h1 {
+  margin: 0;
+  font-weight: 300;
+  font-size: 1.5em;
+}
+/* .footer-content .netflix-title, */
+.app-title .netflix-title {
+  font-weight: 700;
+}
+
+.app-title .back-to-search {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+}
+.app-title .back-to-search svg{
+  width: 2em;
+  height: 2em;
+  fill: #f65261;
+  transform: rotate(90deg);
+  transform-origin: center;
+}
+header .header-content {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  padding: 30px;
+  background-color: #232323e1;
+  z-index: 1;
+}
+
+main {
+  margin-top: 10px;
+  width: 100%;
+  padding: 0 50px 50px 50px;
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  background-color: #232323;
+}
+
+.sort-section {
+  width: 100%;
+  border-bottom: 2px solid #080707;
+  margin-top: 10px;
+}
+
+.red-button {
+  padding: 10px 20px;
+  border: none;
+  background-color: #f65261;
+  border-radius: 3px;
+  color: white;
+  font-size: 0.9em;
+  cursor: pointer;
+  text-transform: uppercase;
+  padding: 10px 30px;
+  font-weight: 500;
+
+}
+
+.border-button {
+  padding: 10px 20px;
+  border: 1px solid #f65261;
+  background-color: transparent;
+  border-radius: 3px;
+  color: #f65261;
+  font-size: 0.9em;
+  cursor: pointer;
+  text-transform: uppercase;
+  padding: 10px 30px;
+  font-weight: 500;
+
+}
+
+.movie-list {
+    width: 100%;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+}
+footer {
+  width: 100%;
+  background-color: #424242;
+  display: flex;
+  justify-content: center;
+  color: #f65261;
+}
+footer h1 {
+  font-weight: 300;
+  font-size: 1.5em;
+}
+footer .netflix-title {
+  font-weight: 700;
+}

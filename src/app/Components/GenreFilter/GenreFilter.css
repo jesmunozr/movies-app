@@ -1,0 +1,52 @@
+.genre-filter {
+	display: flex;
+	align-items: center;
+	gap: 1rem;
+	margin: 0;
+	padding: 0;
+	list-style: none;
+}
+
+.genre-filter li {
+	text-transform: uppercase;
+}
+
+.genre-filter select,
+::picker(select){
+    appearance: base-select;
+}
+
+.genre-filter select {
+    background-color: #232323;
+    border: none;
+    border-radius: 0;
+    text-transform: uppercase;
+    width: 180px;
+}
+.genre-filter select::picker-icon{
+    color: #f65261;
+    transition: 0.4s transform;
+}
+.genre-filter select:open::picker-icon {
+    transform: rotate(180deg);
+}
+::picker(select) {
+    background-color: #232323;
+    color: #fff;
+    border: none;
+}
+
+.genre-filter select option {
+    padding: 5px 10px;
+    text-transform: uppercase;
+}
+
+.genre-filter select option:hover{
+    background-color: #f65261;
+}
+.genre-filter select option:checked{
+    background-color: #f65261;
+}
+.genre-filter select option::checkmark{
+    display: none;
+}

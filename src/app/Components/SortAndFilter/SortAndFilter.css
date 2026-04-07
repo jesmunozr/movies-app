@@ -1,0 +1,24 @@
+.saf-container {
+  width: 100%;
+  border-bottom: 3px solid #424242;
+  display: flex;
+  justify-content: space-between;
+}
+.saf-container.item0{
+  border-image: linear-gradient(to right, #f65260 0px, #f65260 35px, #424242 35px, #424242 100%) 1;
+}
+.saf-container.item1{
+  border-image: linear-gradient(to right, #424242 0px, #424242 45px, #f65260 45px, #f65260 110px,#424242 110px, #424242 100%) 1;
+}
+.saf-container.item2{
+  border-image: linear-gradient(to right, #424242 0px, #424242 125px, #f65260 125px, #f65260 230px,#424242 20px, #424242 100%) 1;
+}
+.saf-container.item3{
+  border-image: linear-gradient(to right, #424242 0px, #424242 240px, #f65260 240px, #f65260 340px,#424242 340px, #424242 100%) 1;
+}
+.saf-container.item4{
+  border-image: linear-gradient(to right, #424242 0px, #424242 350px, #f65260 350px, #f65260 430px,#424242 430px, #424242 100%) 1;
+}
+.saf-container.item5{
+  border-image: linear-gradient(to right, #424242 0px, #424242 450px, #f65260 450px, #f65260 630px,#424242 630px, #424242 100%) 1;
+}
