@@ -32,6 +32,7 @@ function Search({ initialQuery, onSearch }: SearchProps) {
             <h1>Find Your Movie</h1>
             <div>
                 <input 
+                    data-cy="search-input"
                     type="text"
                     defaultValue={initialQuery}
                     placeholder="What do you want to watch?" 

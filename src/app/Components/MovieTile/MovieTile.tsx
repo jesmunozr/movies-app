@@ -62,7 +62,7 @@ const MovieTile = ({
             <img src={imageUrl} alt={`${title}`} />
             <div className="movie-tile-info">
                 <div>
-                    <h2>{title}</h2>
+                    <h2 data-cy="movie-title">{title}</h2>
                     {isValidDate && <p className="release-year">{releaseDate.getFullYear()}</p>}
                 </div>                
                 <p className="genres">{genres?.map(genre => genre.label).join(", ")}</p>

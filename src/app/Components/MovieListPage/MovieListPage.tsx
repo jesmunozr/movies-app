@@ -5,10 +5,11 @@ import AddMovie from '../AddMovie/AddMovie.tsx';
 import MovieDetails from '../MovieDetails/MovieDetails.tsx';
 import MovieTile from '../MovieTile/MovieTile.tsx';
 import SortAndFilter from '../SortAndFilter/SortAndFilter.tsx';
-import { useMovies, useMoviesInfinite } from '@/Services/apiClient.ts';
+import { useMoviesInfinite } from '@/Services/apiClient.ts';
 import type { Movie, MovieGenre } from '@/domain/models/Movie.ts';
 import { mapMovies } from '@/app/mappers/movieMapper.ts';
 import type { ApiRequestParams } from '@/api/models/Movie.ts';
+import { useSearchParams } from 'react-router-dom';
 
 
 
@@ -36,9 +37,6 @@ const genresList: MovieGenre[] = [
 export const GenresContext = createContext<MovieGenre[]>(genresList);
 
 function MovieListPage() {
-  const [searchQuery, setSearchQuery] = useState("");
-  const [sortBy, setSortBy] = useState("title");
-  const [activeGenre, setActiveGenre] = useState<MovieGenre>({value: "all", label: "All"});
   const [selectedMovie, setSelectedMovie] = useState<Movie | null>(null);
   const [apiRequestresParams, setApiRequestParams] = useState<ApiRequestParams>({
     sortOrder: 'desc',
@@ -48,6 +46,7 @@ function MovieListPage() {
     limit: 10
   });
   const { content, loadMore, isReachingEnd, isLoading, isError } = useMoviesInfinite(apiRequestresParams);
+  const [ searchParams, setSearchParams ] = useSearchParams();
 
 
   /** This ref is used to reference the header element in the DOM. It allows us to manipulate the header's CSS classes based on whether a movie is selected or not. */
@@ -58,16 +57,16 @@ function MovieListPage() {
       setApiRequestParams((prev) => {
         return {
           ...prev,
-          search: searchQuery ? searchQuery : undefined,
-          sortBy: sortBy as 'title' | 'releaseDate',
-          filter: activeGenre.value === "all" ? undefined : [activeGenre.value],
+          search: getParam("search"),
+          sortBy: getParam("sortBy") as 'title' | 'releaseDate' || 'title',
+          filter: getParam("filter") === "all" ? undefined : [getParam("filter") || ""],
         };
       });
     };
 
     updateApiRequestParams();
 
-  }, [searchQuery, sortBy, activeGenre]);
+  }, [searchParams]);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -94,11 +93,11 @@ function MovieListPage() {
   };
 
   const handleGenreChange = (genre: MovieGenre) => {
-    setActiveGenre(genre);
+    setParam("filter", genre.value);
   }
 
   const handleSortChange = (sort: string) => {
-    setSortBy(sort);
+    setParam("sortBy", sort);
   }
 
   const renderMovies = () => {
@@ -116,6 +115,27 @@ function MovieListPage() {
       <MovieTile key={movie.id} {...movie} onClick={handleSelectedMovie} />
     ));
   };
+
+  const handleSearchQueryChange = (query: string) => {
+    setParam("search", query);
+  }
+
+  const getParam = (key: string) => {
+    return searchParams.get(key) || undefined;
+  }
+  const setParam = (key: string, value: string) => {
+
+    if(value === undefined || value === null || value === "") {
+      const params = new URLSearchParams(searchParams);
+      params.delete(key);
+      setSearchParams(params);
+      return;
+    }
+
+    const params = new URLSearchParams(searchParams);
+    params.set(key, value);
+    setSearchParams(params);
+  }
 
   return (
     <>
@@ -141,9 +161,9 @@ function MovieListPage() {
               <MovieDetails
                 {...selectedMovie} /> :
               <Search
-                initialQuery={searchQuery}
+                initialQuery={getParam("search") || ""}
                 onSearch={(query: string) => {
-                  setSearchQuery(query);
+                  handleSearchQueryChange(query);
                 }} />
           }
 
