@@ -1,62 +1,102 @@
 import {render, screen} from "@testing-library/react";
-import {expect, it} from "vitest";
+import {expect, it, vi} from "vitest";
 import MovieDetails from "./MovieDetails";
-import type { MovieProps } from "../MovieListPage/MovieListPage";
+import { MemoryRouter, Outlet, Route, Routes } from "react-router-dom";
+import { useMovie } from "@/Services/apiClient";
 
-it("renders MovieDetail component with initial movie data", () =>{
-    const mockProps: MovieProps = {
-        title: "Test Movie Title",
-        description: "Test Movie Desciption",
-        duration: 180,
-        genres: [{ value: "genre1", label: "Genre 1" }, { value: "genre2", label: "Genre 2" }],
-        imageUrl: "movie-poster.jpg",
-        releaseDate: new Date(2026, 3, 7),
-        rating: 8.5,
-    }
-    const {container} = render(<MovieDetails {...mockProps}/>);
+// Global mock for useMovie hook
+vi.mock("@/Services/apiClient", () => ({
+    useMovie: vi.fn(),
+}));
 
-    const rateElement = container.querySelector(".movie-details-title-rate p");
-    expect(rateElement).not.toBeNull();
-    expect(rateElement?.textContent).toBe(mockProps.rating?.toString());
+// Mock implementation for useMovie hook
+const mockedUseMovie = vi.mocked(useMovie);
 
-    const moviePoster = screen.getByRole("img") as HTMLImageElement;
-
-    expect(moviePoster.src).toContain(mockProps.imageUrl);
-    expect(moviePoster.alt).toBe(mockProps.title?.concat(" poster"));
-    
-    expect(screen.getByText(mockProps.genres!.map(g => g.label).join(", "))).toBeInTheDocument();
-    expect(screen.getByText(mockProps.releaseDate!.getFullYear())).toBeInTheDocument();
+// Data factory function to create movie objects for testing
+const createMovie = (overrides = {}) => ({
+    title: "Test Movie Title",
+    description: "Test Movie Description",
+    duration: 180,
+    genres: [
+    { value: "genre1", label: "Genre 1" },
+    { value: "genre2", label: "Genre 2" },
+    ],
+    imageUrl: "movie-poster.jpg",
+    releaseDate: new Date(2026, 3, 7),
+    rating: 8.5,
+    id: 100,
+    ...overrides,
 });
 
-it("renders MovieDetail component with invalid release date and duration", () =>{
-    const mockProps: MovieProps = {
-        title: "Test Movie Title",
-        description: "Test Movie Desciption",
-        duration: 0,
-        genres: [{ value: "genre1", label: "Genre 1" }, { value: "genre2", label: "Genre 2" }],
-        imageUrl: "movie-poster.jpg",
-        releaseDate: new Date("yyyy-mm-dd"),
-        rating: 8.5,
-    }
+// Helper function to render MovieDetails component with router context
+function renderWithRouterContext(context: any = { movieId: 100 }) {
+    return render (
+        <MemoryRouter initialEntries={["/100"]}>
+            <Routes>
+                <Route element={<Outlet context={context} />}>
+                    <Route path="/:movieId" element={<MovieDetails />} />
+                </Route>
+            </Routes>
+        </MemoryRouter>
+    );
+}
 
-    const { container } = render(<MovieDetails {...mockProps}/>);
+describe("MovieDetails component", () => {
 
-    const divElement = container.querySelector("movie-details-year-duration");
-    expect(divElement?.innerHTML).not.toBeDefined();
-});
+    beforeEach(() => {
+        vi.clearAllMocks();
+    });
 
-it("renders MovieDetail component without rating property", () =>{
-    const mockProps: MovieProps = {
-        title: "Test Movie Title",
-        description: "Test Movie Desciption",
-        duration: 0,
-        genres: [{ value: "genre1", label: "Genre 1" }, { value: "genre2", label: "Genre 2" }],
-        imageUrl: "movie-poster.jpg",
-        releaseDate: new Date(2026, 3, 7),
-    }
+    it("renders MovieDetail component with initial movie data", () =>{
 
-    const { container } = render(<MovieDetails {...mockProps}/>);
+        mockedUseMovie.mockReturnValue({
+            content: createMovie(),
+            isLoading: false,
+            isError: undefined,
+        });
 
-    const element = container.querySelector(".movie-details-title-rate p");
-    expect(element).toBeNull();
+        renderWithRouterContext();
+
+        expect(screen.getByText("Test Movie Title")).toBeInTheDocument();
+        expect(screen.getByText("Genre 1, Genre 2")).toBeInTheDocument();
+        expect(screen.getByText("2026")).toBeInTheDocument();
+
+        const img = screen.getByRole("img");
+        expect(img).toHaveAttribute("src", expect.stringContaining("movie-poster.jpg"));
+        expect(img).toHaveAttribute("alt", "Test Movie Title poster");
+
+        expect(screen.getByText("8.5")).toBeInTheDocument();
+    });
+
+    it("renders MovieDetail component with invalid release date and duration", () =>{
+
+        mockedUseMovie.mockReturnValue({
+            content: createMovie({
+                releaseDate: new Date("invalid-date"),
+                duration: NaN,
+            }),
+            isLoading: false,
+            isError: undefined,
+        });
+
+
+        renderWithRouterContext();
+
+        expect(screen.queryByText("2026")).not.toBeInTheDocument();
+        expect(screen.queryByText(/min/i)).not.toBeInTheDocument()
+    });
+
+    it("renders MovieDetail component without rating property", () =>{
+        mockedUseMovie.mockReturnValue({
+            content: createMovie({
+                rating: undefined,
+            }),
+            isLoading: false,
+            isError: undefined,
+        });
+
+        renderWithRouterContext();
+
+        expect(screen.queryByText("8.5")).not.toBeInTheDocument();
+    });
 });

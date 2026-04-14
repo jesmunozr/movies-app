@@ -5,6 +5,7 @@ import MovieTile from "./MovieTile";
 import type { MovieTileComponentProps } from "./MovieTile";
 
 describe("MovieTile tests", () => {
+    
     const mockProps: MovieTileComponentProps = {
         title: "Test Movie Title",
         description: "Test Movie Desciption",
@@ -101,6 +102,7 @@ describe("MovieTile tests", () => {
             duration: 148,
             description: 'A thief who steals corporate secrets...',
             rating: 8.8,
+            id: 100,
             onClick: () => {}
         };
 
@@ -110,14 +112,6 @@ describe("MovieTile tests", () => {
         await userEvent.click(mainContainer);
 
         expect(onClickSpy).toHaveBeenCalledTimes(1);
-        expect(onClickSpy).toHaveBeenCalledWith({
-            imageUrl: mockMovie.imageUrl,
-            title: mockMovie.title,
-            releaseDate: mockMovie.releaseDate,
-            genres: mockMovie.genres,
-            duration: mockMovie.duration,
-            description: mockMovie.description,
-            rating: mockMovie.rating
-        });
+        expect(onClickSpy).toHaveBeenCalledWith(mockMovie.id!);
     });
 });

@@ -3,7 +3,9 @@ import {render, screen, fireEvent} from '@testing-library/react';
 import { useMoviesInfinite } from "@/Services/apiClient.ts";
 import MovieListPage from "./MovieListPage";
 import type { ApiMovie, ApiPageResponse } from "@/api/models/Movie";
-import { MemoryRouter } from "react-router-dom";
+import { MemoryRouter, Route, Routes } from "react-router-dom";
+import Search from "../Search/Search";
+import MovieDetails from "../MovieDetails/MovieDetails";
 
 describe("MovieListPage", () => {
     const mockMovies = [
@@ -40,7 +42,12 @@ describe("MovieListPage", () => {
     function renderWithRouter(ui: React.ReactElement, { route = "/" } = {}) {
         return render(
             <MemoryRouter initialEntries={[route]}>
-                {ui}
+                <Routes>
+                    <Route path="/" element={ui}>
+                        <Route index element={<Search />} />
+                        <Route path="/:movieId" element={<MovieDetails />} />
+                    </Route>
+                </Routes>
             </MemoryRouter>
         );
     }

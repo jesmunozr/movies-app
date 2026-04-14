@@ -1,15 +1,10 @@
 import { useState, useEffect } from "react";
 import "./Search.css";
-
-export interface SearchProps {
-    /** The initial search query to populate the input field with. */
-    initialQuery: string;
-    /** A function to be called when the user submits a search query. */
-    onSearch?: (query: string) => void;
-}
+import { useOutletContext } from "react-router-dom";
 
 /** A search component that allows users to input a movie title and submit a search query. */
-function Search({ initialQuery, onSearch }: SearchProps) {
+function Search() {
+    const { initialQuery, onSearch } = useOutletContext<{ initialQuery: string, onSearch: (query: string) => void }>();
     const [query, setQuery] = useState(initialQuery);
     const [debouncedQuery, setDebouncedQuery] = useState(initialQuery);
 
