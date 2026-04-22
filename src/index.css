@@ -17,3 +17,31 @@ body {
   color: #fff;
   background-color: #555555;
 }
+
+.red-button {
+  padding: 10px 20px;
+  border: none;
+  background-color: #f65261;
+  border-radius: 3px;
+  color: white;
+  font-size: 0.9em;
+  cursor: pointer;
+  text-transform: uppercase;
+  padding: 10px 30px;
+  font-weight: 500;
+
+}
+
+.border-button {
+  padding: 10px 20px;
+  border: 1px solid #f65261;
+  background-color: transparent;
+  border-radius: 3px;
+  color: #f65261;
+  font-size: 0.9em;
+  cursor: pointer;
+  text-transform: uppercase;
+  padding: 10px 30px;
+  font-weight: 500;
+
+}

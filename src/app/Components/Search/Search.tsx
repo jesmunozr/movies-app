@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import "./Search.css";
 import { useOutletContext } from "react-router-dom";
+import Header from "../Header/Header";
 
 /** A search component that allows users to input a movie title and submit a search query. */
 function Search() {
@@ -24,23 +25,26 @@ function Search() {
 
     return (
         <div className="search-container">
-            <h1>Find Your Movie</h1>
-            <div>
-                <input 
-                    data-cy="search-input"
-                    type="text"
-                    defaultValue={initialQuery}
-                    placeholder="What do you want to watch?" 
-                    onKeyUp={(event: React.KeyboardEvent<HTMLInputElement>) => {
-                        if (event.key === "Enter" && onSearch) {
-                            onSearch(query);
-                        }
-                    }}
-                    onChange={(event) => {
-                        setQuery(event.target.value);
-                    }}
-                />
-                <button onClick={() => onSearch && onSearch(query)}>Search</button>
+            <Header />
+            <div className="search-content">
+                <h1>Find Your Movie</h1>
+                <div>
+                    <input 
+                        data-cy="search-input"
+                        type="text"
+                        defaultValue={initialQuery}
+                        placeholder="What do you want to watch?" 
+                        onKeyUp={(event: React.KeyboardEvent<HTMLInputElement>) => {
+                            if (event.key === "Enter" && onSearch) {
+                                onSearch(query);
+                            }
+                        }}
+                        onChange={(event) => {
+                            setQuery(event.target.value);
+                        }}
+                    />
+                    <button onClick={() => onSearch && onSearch(query)}>Search</button>
+                </div>
             </div>
         </div>
     );
