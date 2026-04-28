@@ -3,6 +3,8 @@ import { config } from "@/config/config";
 import type { ApiPageResponse, ApiRequestParams, ApiResponse } from "@/api/models/Movie";
 import useSWRInfinite from "swr/infinite";
 import { useMemo } from "react";
+import { mapMovie } from "@/app/mappers/movieMapper";
+import type { Movie } from "@/domain/models/Movie";
 
 const fetcher = ([_, params]: [string, ApiRequestParams]) => getMovies(params);
 
@@ -34,6 +36,34 @@ async function getMovies(params: ApiRequestParams): Promise<ApiPageResponse> {
         console.error("Error fetching movies:", error);
         throw error;
     }
+}
+
+async function getMovieById(url: string): Promise<Movie> {
+    try{
+        const response = await fetch(`${config.apiBaseUrl}${url}`);
+        const data = await response.json();
+        return mapMovie(data);
+    }catch (error) {
+        console.error("Error fetching movie by ID:", error);
+        throw error;
+    }
+}
+
+function useMovie(id: number) {
+    
+    const apiUrl = `/movies/${id}`;
+    const { data, error, isLoading } = useSWR(apiUrl, () => getMovieById(apiUrl), {
+        shouldRetryOnError: false,
+        shouldRevalidateOnFocus: false,
+    });
+
+    const result = {
+        content: data,
+        isLoading,
+        isError: error,
+    };
+
+    return result;
 }
 
 function useMovies(apiRequestParams: ApiRequestParams) {
@@ -96,4 +126,4 @@ function useMoviesInfinite(params: Omit<ApiRequestParams, 'offset' | 'limit'>) {
     return apiResponse;
 }
 
-export { useMovies, useMoviesInfinite };
+export { useMovies, useMoviesInfinite, useMovie };

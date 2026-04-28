@@ -20,6 +20,7 @@ export const Sort = ({ sortBy, onSortChange }: SortProps) => {
         <div className="sort-movies">
             <label htmlFor="sort">Sort by</label>
             <select
+                data-cy="sort-select"
                 data-testid="sort-select"
                 id="sort"
                 value={selectedOption}

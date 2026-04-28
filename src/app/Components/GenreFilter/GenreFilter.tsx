@@ -19,14 +19,15 @@ const GenreFilter = (
 
     return (
         <>
-            <ul className="genre-filter">
-                <li key="all" value="all" onClick={() => handleGenreChange({value: "all", label: "All"})}>All</li>
+            <ul data-cy="genre-filter" className="genre-filter">
+                <li data-cy="genre-option" key="all" value="all" onClick={() => handleGenreChange({value: "all", label: "All"})}>All</li>
                 {genres && genres.length > 0 && genres.slice(0, 4).map((genre) => (
-                    <li key={genre.value} onClick={() => handleGenreChange({value: genre.value, label: genre.label})}>{genre.label}</li>
+                    <li data-cy="genre-option" key={genre.value} onClick={() => handleGenreChange({value: genre.value, label: genre.label})}>{genre.label}</li>
                 ))}
                 {
                     genres && genres.length > 4 ? 
                     <select 
+                        data-cy="genre-option"
                         value={selectedGenre?.value || ""} 
                         onChange={(e) => handleGenreChange({value: e.target.value, label: e.target.options[e.target.selectedIndex].text})}
                     >

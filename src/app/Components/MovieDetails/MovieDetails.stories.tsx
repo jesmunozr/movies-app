@@ -1,7 +1,27 @@
 import type { Meta, StoryObj } from '@storybook/react-vite';
-
+import { http, HttpResponse } from "msw";
 import MovieDetails from './MovieDetails';
-import { fn } from 'storybook/test';
+import { MemoryRouter, Outlet, Route, Routes } from 'react-router-dom';
+
+function RouterWrapper({
+  children,
+  context,
+  initialEntries = ['/'],
+}: {
+  children: React.ReactNode;
+  context: any;
+  initialEntries?: string[];
+}) {
+  return (
+    <MemoryRouter initialEntries={initialEntries}>
+      <Routes>
+        <Route element={<Outlet context={context} />}>
+          <Route path="/" element={children} />
+        </Route>
+      </Routes>
+    </MemoryRouter>
+  );
+}
 
 const meta = {
   title: "movies-app/MovieDetails",
@@ -17,20 +37,35 @@ export default meta;
 type Story = StoryObj<typeof meta>;
 
 export const Default: Story = {
-  args: {
-    imageUrl: "https://images.squarespace-cdn.com/content/v1/51b3dc8ee4b051b96ceb10de/1526316550228-B0K75I48RK0Z7AN3CLP8/promo-teaser-and-poster-for-the-queen-biopic-bohemian-rhapsody",
-    title: "Bohemian Rhapsody",
-    releaseDate: new Date("2018-11-02"),
-    genres: [
-      { value: "docudrama", label: "Docudrama" },
-      { value: "period-drama", label: "Period Drama" },
-      { value: "showbiz-drama", label: "Showbiz Drama" },
-      { value: "biography", label: "Biography" },
-      { value: "drama", label: "Drama" },
-      { value: "music", label: "Music" }
-    ],
-    duration: 134,
-    description: "With his impeccable vocal abilities, Freddie Mercury and his rock band, Queen, achieve superstardom. However, amidst his skyrocketing success, he grapples with his ego, sexuality and a fatal illness.",
-    rating: 8.9
+  parameters: {
+    msw: {
+      handlers: [
+        http.get("http://localhost:4000/movies/100", () => {
+          return HttpResponse.json({
+            title: "La La Land",
+            tagline: "Here's to the fools who dream.",
+            vote_average: 7.9,
+            vote_count: 6782,
+            release_date: "2016-12-29",
+            poster_path: "https://image.tmdb.org/t/p/w500/ylXCdC106IKiarftHkcacasaAcb.jpg",
+            overview: "Mia, an aspiring actress, serves lattes to movie stars in between auditions and Sebastian, a jazz musician, scrapes by playing cocktail party gigs in dingy bars, but as success mounts they are faced with decisions that begin to fray the fragile fabric of their love affair, and the dreams they worked so hard to maintain in each other threaten to rip them apart.",
+            budget: 30000000,
+            revenue: 445435700,
+            runtime: 128,
+            genres: [
+              "Comedy",
+              "Drama",
+              "Romance"
+            ],
+            id: 100
+          });
+        }),
+      ],
+    },
   },
+  render: () => (
+    <RouterWrapper context={{ movieId: 100 }}>
+      <MovieDetails />
+    </RouterWrapper>
+  ),
 };

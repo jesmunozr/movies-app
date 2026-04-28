@@ -14,7 +14,7 @@ export interface Movie {
     /** The rating of the movie */
     rating?: number;
     /** The unique identifier of the movie */
-    id?:number;
+    id?: number;
 };
 
 export interface MovieGenre {

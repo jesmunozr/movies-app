@@ -10,7 +10,7 @@ export const mapMovie = (apiMovie: ApiMovie): Movie => {
         duration: apiMovie.runtime,
         description: apiMovie.overview,
         rating: apiMovie.vote_average,
-        imageUrl: apiMovie.poster_path ? `https://image.tmdb.org/t/p/w500${apiMovie.poster_path}` : undefined,
+        imageUrl: apiMovie.poster_path ? apiMovie.poster_path : undefined,
     };
 };
 

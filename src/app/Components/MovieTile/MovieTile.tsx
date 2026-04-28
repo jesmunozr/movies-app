@@ -8,7 +8,7 @@ import DeleteMovie from "../DeleteMovie/DeleteMovie";
 
 export interface MovieTileComponentProps extends Movie {
     /** A function to be called when the movie tile is clicked. */
-    onClick: (movie: Movie) => void;
+    onClick: (movieId: number) => void;
 }
 
 /** A component that displays a movie tile with its poster, title, release date year and genres.
@@ -21,6 +21,7 @@ const MovieTile = ({
     duration, 
     description,
     rating,
+    id,
     onClick
 }: MovieTileComponentProps) => {
     const [isOpen, setIsOpen] = React.useState(false);
@@ -58,11 +59,11 @@ const MovieTile = ({
     const isValidDate = releaseDate instanceof Date && !isNaN(releaseDate.getFullYear());
 
     return (
-        <div data-testid="movie-tile-container" className="movie-tile" onClick={() => onClick({ imageUrl, title, releaseDate, genres, duration, description, rating })}>
+        <div data-testid="movie-tile-container" className="movie-tile" onClick={() => onClick(id!)}>
             <img src={imageUrl} alt={`${title}`} />
             <div className="movie-tile-info">
                 <div>
-                    <h2>{title}</h2>
+                    <h2 data-cy="movie-title">{title}</h2>
                     {isValidDate && <p className="release-year">{releaseDate.getFullYear()}</p>}
                 </div>                
                 <p className="genres">{genres?.map(genre => genre.label).join(", ")}</p>
@@ -107,6 +108,7 @@ const MovieTile = ({
                         duration={duration} 
                         description={description} 
                         rating={rating}
+                        id={id}
                         onDelete={() => setIsModalOpen(false)}
                     />
                 )

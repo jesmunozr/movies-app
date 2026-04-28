@@ -3,7 +3,9 @@ import {render, screen, fireEvent} from '@testing-library/react';
 import { useMoviesInfinite } from "@/Services/apiClient.ts";
 import MovieListPage from "./MovieListPage";
 import type { ApiMovie, ApiPageResponse } from "@/api/models/Movie";
-import userEvent from "@testing-library/user-event";
+import { MemoryRouter, Route, Routes } from "react-router-dom";
+import Search from "../Search/Search";
+import MovieDetails from "../MovieDetails/MovieDetails";
 
 describe("MovieListPage", () => {
     const mockMovies = [
@@ -37,6 +39,18 @@ describe("MovieListPage", () => {
         }
     ] as ApiMovie[];
 
+    function renderWithRouter(ui: React.ReactElement, { route = "/" } = {}) {
+        return render(
+            <MemoryRouter initialEntries={[route]}>
+                <Routes>
+                    <Route path="/" element={ui}>
+                        <Route index element={<Search />} />
+                        <Route path="/:movieId" element={<MovieDetails />} />
+                    </Route>
+                </Routes>
+            </MemoryRouter>
+        );
+    }
 
     it("renders the MovieListPage component", async () => {
 
@@ -59,7 +73,7 @@ describe("MovieListPage", () => {
             isReachingEnd: true,
         });
 
-        render(<MovieListPage />);
+        renderWithRouter(<MovieListPage />);
 
         const searchComponent = screen.getByText(/find your movie/i);
         expect(searchComponent).toBeInTheDocument();
@@ -91,7 +105,7 @@ describe("MovieListPage", () => {
             isReachingEnd: false,
         });
 
-        render(<MovieListPage />);
+        renderWithRouter(<MovieListPage />);
 
         expect(loadMoreMock).not.toHaveBeenCalled();
     });
@@ -111,7 +125,7 @@ describe("MovieListPage", () => {
             isReachingEnd: false,
         });
 
-        render(<MovieListPage />);
+        renderWithRouter(<MovieListPage />);
 
         expect(screen.getByText(/loading movies/i)).toBeInTheDocument();
     });
@@ -131,7 +145,7 @@ describe("MovieListPage", () => {
             isReachingEnd: false,
         });
 
-        render(<MovieListPage />);
+        renderWithRouter(<MovieListPage />);
 
         expect(screen.getByText(/failed to load movies/i)).toBeInTheDocument();
     });
@@ -156,7 +170,7 @@ describe("MovieListPage", () => {
             isReachingEnd: false,
         });
 
-        render(<MovieListPage />);
+        renderWithRouter(<MovieListPage />);
 
         // Simulate scrolling to the bottom of the page
         Object.defineProperty(window, "innerHeight", {
