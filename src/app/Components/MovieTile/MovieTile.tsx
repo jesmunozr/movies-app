@@ -76,7 +76,7 @@ const MovieTile = ({
                 </div>                
                 <p className="genres">{genres?.map(genre => genre.label).join(", ")}</p>
             </div>
-            <button onClick={openPortal}>&#8942;</button>
+            <button data-cy="movie-options-button" onClick={openPortal}>&#8942;</button>
             {isOpen && createPortal (
                 <div data-testid="context-menu" className="movie-tile-context-menu" style={{ position: 'absolute', top: coords.top, left: coords.left, width: `${contextMenuWidth}px` }}>
                     <button onClick={(e) => {
@@ -84,8 +84,8 @@ const MovieTile = ({
                         setIsOpen(false);
                     }}>&#88;</button>
                     <ul>
-                        <li onClick={openDialogAndCloseMenu}>Edit</li>
-                        <li onClick={openDialogAndCloseMenu}>Delete</li>
+                        <li data-cy="movie-edit-button" onClick={openDialogAndCloseMenu}>Edit</li>
+                        <li data-cy="movie-delete-button" onClick={openDialogAndCloseMenu}>Delete</li>
                     </ul>
                     
                 </div>,

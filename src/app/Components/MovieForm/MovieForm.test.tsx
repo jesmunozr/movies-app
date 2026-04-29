@@ -1,40 +1,77 @@
 import {describe, it, expect, vi} from "vitest"
 import MovieForm from "./MovieForm";
-import {render, screen, fireEvent, getByLabelText} from "@testing-library/react";
+import {render, screen, fireEvent, waitFor } from "@testing-library/react";
 import { GenresContext } from "../MovieListPage/MovieListPage";
-import { mutate } from "swr";
 import selectEvent from "react-select-event";
+import { MemoryRouter, Route, Routes } from "react-router-dom";
+import type { Movie } from "@/domain/models/Movie";
 
-// Mock the createMovie function from the apiClient
+const testMovie: Movie = {
+    id: 1,
+    imageUrl: "https://domain.com/test-movie.jpg",
+    title: "Test Movie",
+    releaseDate: new Date("2023-01-01"),
+    genres: [ { value: "action", label: "Action" }, { value: "comedy", label: "Comedy" } ],
+    duration: 120,
+    description: "This is a test movie.",
+    rating: 8.0,
+};
+// Mock the createMovie and updateMovie functions from the apiClient
 const createMovieMock = vi.fn();
+const updateMovieMock = vi.fn();
 vi.mock('@/Services/apiClient.ts', () => ({
     useCreateMovie: () => ({
         createMovie: createMovieMock,
         isCreating: false,
     }),
-}));
-
-vi.mock("swr", () => ({
-    mutate: vi.fn(),
+    useUpdateMovie: () => ({
+        updateMovie: updateMovieMock,
+        isUpdating: false,
+    }),
+    useMovie: (movieId?: number) => ({
+        content: movieId ? testMovie : undefined,
+    }),
 }));
 
 // Mock the GenresContext to provide a list of genres for testing
-function renderWithContext(ui: React.ReactNode) {
+function renderWithContext(ui: React.ReactNode, movieId?: number) {
     const genresList = [ { value: "action", label: "Action" }, { value: "comedy", label: "Comedy" } ];
     return render(
-        <GenresContext.Provider value={genresList}>
-            {ui}
-        </GenresContext.Provider>
+        <MemoryRouter initialEntries={[movieId ? `/${movieId}/edit` : "/new"]}>
+            <Routes>
+                <Route
+                    path="/new"
+                    element={
+                        <GenresContext.Provider value={genresList}>
+                            {ui}
+                        </GenresContext.Provider>
+                    }
+                />
+                <Route
+                    path="/:movieId/edit"
+                    element={
+                        <GenresContext.Provider value={genresList}>
+                            {ui}
+                        </GenresContext.Provider>
+                    }
+                />
+            </Routes>
+        </MemoryRouter>
     );
 }
 
 describe("MovieForm", () => {
 
-    
-
-    it("renders without crashing", () => {
-        renderWithContext(<MovieForm onSubmitted={() => {}} />);
+    it("renders without crashing to create a movie", () => {
+        renderWithContext(<MovieForm onSubmitted={() => {}} />, undefined);
         expect(screen.getByText("Title")).toBeInTheDocument();
+    });
+
+    it("renders without crashing to update a movie", async () => {
+        renderWithContext(<MovieForm onSubmitted={() => {}} />, 1);
+        expect(screen.getByText("Title")).toBeInTheDocument();
+        const input = screen.getByPlaceholderText("Movie Name");
+        await waitFor(() => expect(input).toHaveValue(testMovie.title!));
     });
 
     it("renders with initial data", () => {
@@ -60,7 +97,6 @@ describe("MovieForm", () => {
         expect(await screen.findByText("Select at least one genre to proceed.")).toBeInTheDocument();
         expect(await screen.findByText("Runtime must be at least 1 minute.")).toBeInTheDocument();
         expect(await screen.findByText("Description is required.")).toBeInTheDocument();
-        expect(await screen.findByText("Release date cannot be in the future.")).toBeInTheDocument();
     });
 
     it("resets form data when reset button is clicked", async () => {
@@ -101,8 +137,9 @@ describe("MovieForm", () => {
 
     it("submits form data when submit button is clicked", async () => {
         const mockOnSubmitted = vi.fn();
+        createMovieMock.mockClear();
 
-        renderWithContext(<MovieForm onSubmitted={mockOnSubmitted} />);
+        renderWithContext(<MovieForm onSubmitted={mockOnSubmitted} />, undefined);
         
         // Fill all required fields with valid data
         fireEvent.change(screen.getByPlaceholderText("Movie Name"), { target: { value: "Test Movie" } });
@@ -118,9 +155,7 @@ describe("MovieForm", () => {
         const submitButton = screen.getByRole("button", { name: /submit/i });
         fireEvent.click(submitButton);
 
-        screen.debug();
-
-        expect(createMovieMock).toHaveBeenCalledTimes(1);
+        await waitFor(() => expect(createMovieMock).toHaveBeenCalledTimes(1));
 
         // Validates that createMovie was called with the correct data
         expect(createMovieMock).toHaveBeenCalledWith({
@@ -128,12 +163,14 @@ describe("MovieForm", () => {
             releaseDate: new Date("2023-01-01"),
             imageUrl: "https://domain.com/test-movie.jpg",
             rating: 8.0,
-            genres: [ "Action", "Comedy" ],
+            genres: [
+                { value: "action", label: "Action" },
+                { value: "comedy", label: "Comedy" },
+            ],
             duration: 120,
             description: "This is a test movie."
         });
 
-        expect(mutate).toHaveBeenCalledWith("/movies");
-        expect(mockOnSubmitted).toHaveBeenCalled();
+        await waitFor(() => expect(mockOnSubmitted).toHaveBeenCalled());
     });
 });

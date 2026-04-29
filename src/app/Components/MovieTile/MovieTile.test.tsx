@@ -3,8 +3,17 @@ import {expect, it, vi} from "vitest";
 import userEvent from "@testing-library/user-event";
 import MovieTile from "./MovieTile";
 import type { MovieTileComponentProps } from "./MovieTile";
+import { MemoryRouter } from "react-router-dom";
 
 describe("MovieTile tests", () => {
+
+    const renderWithRouter = (ui: React.ReactElement) => {
+        return render(
+            <MemoryRouter>
+                {ui}
+            </MemoryRouter>
+        );
+    };
     
     const mockProps: MovieTileComponentProps = {
         title: "Test Movie Title",
@@ -19,7 +28,7 @@ describe("MovieTile tests", () => {
 
     it("renders MovieTile component with initial movie data", () =>{
 
-        render(<MovieTile {...mockProps}/>);
+        renderWithRouter(<MovieTile {...mockProps}/>);
 
         const moviePoster = screen.getByRole("img") as HTMLImageElement;
 
@@ -41,7 +50,7 @@ describe("MovieTile tests", () => {
             onClick: () => {},
         }
 
-        const { container } = render(<MovieTile {...mockPropsInvalid}/>);
+        const { container } = renderWithRouter(<MovieTile {...mockPropsInvalid}/>);
 
         const element = container.querySelector(".release-year");
         expect(element).toBeNull();
@@ -57,7 +66,7 @@ describe("MovieTile tests", () => {
     it("renders the modal pop up when the button is clicked", async () => {
         const expectedData = ["Edit", "Delete"];
 
-        render(<MovieTile {...mockProps}/>);
+        renderWithRouter(<MovieTile {...mockProps}/>);
 
         const modalButton = screen.getByRole("button");
         await userEvent.click(modalButton);
@@ -75,7 +84,7 @@ describe("MovieTile tests", () => {
     });
 
     it("closes the modal pop up when the close button is clicked", async () => {
-        render(<MovieTile {...mockProps}/>);
+        renderWithRouter(<MovieTile {...mockProps}/>);
 
         const modalButton = screen.getByRole("button");
         await userEvent.click(modalButton);
@@ -106,7 +115,7 @@ describe("MovieTile tests", () => {
             onClick: () => {}
         };
 
-        render(<MovieTile {...mockMovie} onClick={onClickSpy}/>);
+        renderWithRouter(<MovieTile {...mockMovie} onClick={onClickSpy}/>);
 
         const mainContainer = screen.getByTestId("movie-tile-container");
         await userEvent.click(mainContainer);

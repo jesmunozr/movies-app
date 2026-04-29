@@ -7,10 +7,9 @@ import { Controller, useForm } from 'react-hook-form';
 import { movieSchema } from '@/domain/schemas/movie.schema.ts';
 import { useCreateMovie, useMovie, useUpdateMovie } from '@/Services/apiClient.ts';
 import type { Movie } from '@/domain/models/Movie.ts';
-import { useOutletContext, useParams } from 'react-router-dom';
+import { useParams } from 'react-router-dom';
 
 export default function MovieForm({onSubmitted}: { onSubmitted: () => void }) {
-    const { onMovieUpdated, onMovieCreated } = useOutletContext<{ onMovieUpdated: (movie: Movie) => void, onMovieCreated: (movie: Movie) => void }>();
     const genresList = useContext(GenresContext);
     const params = useParams();
     const isEditMode = Boolean(params.movieId);
@@ -78,6 +77,7 @@ export default function MovieForm({onSubmitted}: { onSubmitted: () => void }) {
             fontSize: "medium",
         }),
     };
+    
     const {
         register,
         handleSubmit,
@@ -116,11 +116,9 @@ export default function MovieForm({onSubmitted}: { onSubmitted: () => void }) {
     const onSubmitHandler = async (data: Movie) => {
         console.log("Submitted data:", data);
         if (isEditMode) {
-            const updated = await updateMovie(data);
-            onMovieUpdated(updated);
+            await updateMovie(data);
         } else {
-            const created =await createMovie(data);
-            onMovieCreated(created);
+            await createMovie(data);
         }
         onSubmitted();
     };
@@ -139,22 +137,22 @@ export default function MovieForm({onSubmitted}: { onSubmitted: () => void }) {
         >
             <label className="col-left">
                 Title
-                <input {...register("title")} placeholder="Movie Name" />
+                <input data-cy="movie-title-input" {...register("title")} placeholder="Movie Name" />
                 {errors.title && <span className="error">{errors.title.message}</span>}
             </label>
             <label className="col-right">
                 Release Date
-                <input type="date" {...register("releaseDate", { valueAsDate: true })} />
+                <input data-cy="movie-release-date-input" type="date" {...register("releaseDate", { valueAsDate: true })} />
                 {errors.releaseDate && <span className="error">{errors.releaseDate.message}</span>}
             </label>
             <label className="col-left">
                 Movie Url
-                <input type="text" {...register("imageUrl")} placeholder="https://" />
+                <input data-cy="movie-url-input" type="text" {...register("imageUrl")} placeholder="https://" />
                 {errors.imageUrl && <span className="error">{errors.imageUrl.message}</span>}
             </label>
             <label className="col-right">
                 Rating
-                <input type="number" {...register("rating", { valueAsNumber: true })} placeholder="Rating" />
+                <input data-cy="movie-rating-input" type="number" {...register("rating", { valueAsNumber: true })} placeholder="Rating" step="0.1" min="0" max="10" />
                 {errors.rating && <span className="error">{errors.rating.message}</span>}
             </label>
             <label className="col-left" htmlFor="genres">
@@ -179,17 +177,17 @@ export default function MovieForm({onSubmitted}: { onSubmitted: () => void }) {
             </label>
             <label className="col-right">
                 Runtime
-                <input type="number" {...register("duration", { valueAsNumber: true })} placeholder="Minutes" />
+                <input data-cy="movie-runtime-input" type="number" {...register("duration", { valueAsNumber: true })} placeholder="Minutes" />
                 {errors.duration && <span className="error">{errors.duration.message}</span>}
             </label>
             <label className="full-width">
                 Overview
-                <textarea {...register("description")} placeholder="Movie description"></textarea>
+                <textarea data-cy="movie-overview-input" {...register("description")} placeholder="Movie description"></textarea>
                 {errors.description && <span className="error">{errors.description.message}</span>}
             </label>
             <div className="button-group full-width">
-                <button type="reset" className="border-button" disabled={isCreating || isUpdating}>Reset</button>
-                <button type="submit" className="red-button" disabled={isCreating || isUpdating}>Submit</button>
+                <button data-cy="movie-reset-button" type="reset" className="border-button" disabled={isCreating || isUpdating}>Reset</button>
+                <button data-cy="movie-submit-button" type="submit" className="red-button" disabled={isCreating || isUpdating}>Submit</button>
             </div>
         </form>
     );

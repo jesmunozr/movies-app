@@ -3,7 +3,7 @@ export interface ApiRequestParams {
     sortBy: 'title' | 'releaseDate';
     search?: string;
     searchBy: 'title' | 'genres';
-    filter?: string[];
+    filter: string;
     offset: number;
     limit: number;
 }

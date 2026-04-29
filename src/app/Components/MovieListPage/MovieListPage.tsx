@@ -5,7 +5,7 @@ import SortAndFilter from '../SortAndFilter/SortAndFilter.tsx';
 import { useMoviesInfinite } from '@/Services/apiClient.ts';
 import type { ApiRequestParams } from '@/api/models/Movie.ts';
 import { Outlet, useSearchParams, useNavigate, useParams } from 'react-router-dom';
-import type { Movie, MovieGenre } from '@/domain/models/Movie.ts';
+import type { MovieGenre } from '@/domain/models/Movie.ts';
 
 
 /** A list of available genres for movies. This is used to populate the genre selection dropdown in the form. */
@@ -34,13 +34,15 @@ export const GenresContext = createContext<MovieGenre[]>(genresList);
 function MovieListPage() {
   const { movieId } = useParams();
   const [apiRequestresParams, setApiRequestParams] = useState<ApiRequestParams>({
-    sortOrder: 'desc',
-    sortBy: 'title',
-    searchBy: 'title',
+    filter: "",
+    limit: 12,
     offset: 0,
-    limit: 10
+    search: "",
+    searchBy: 'title',
+    sortBy: 'title',
+    sortOrder: 'asc',
   });
-  const { content, loadMore, isReachingEnd, isLoading, isError, mutatePages } = useMoviesInfinite(apiRequestresParams);
+  const { content, loadMore, isReachingEnd, isLoading, isError } = useMoviesInfinite(apiRequestresParams);
   const [ searchParams, setSearchParams ] = useSearchParams();
   const navigate = useNavigate();
 
@@ -50,9 +52,9 @@ function MovieListPage() {
       setApiRequestParams((prev) => {
         return {
           ...prev,
-          search: getParam("search"),
-          sortBy: getParam("sortBy") as 'title' | 'releaseDate' || 'title',
-          filter: getParam("filter") === "all" ? undefined : [getParam("filter") || ""],
+          search: getParam("search") || "",
+          sortBy: (getParam("sortBy") as 'title' | 'releaseDate') || 'title',
+          filter: getParam("filter") === "all" ? "" : getParam("filter") || "",
         };
       });
     };
@@ -65,13 +67,13 @@ function MovieListPage() {
     const handleScroll = () => {
       if (isLoading || isReachingEnd) return;
       if (window.innerHeight + window.scrollY >= document.body.offsetHeight - 500) {
-        loadMore!();
+        loadMore?.();
       }
     };
 
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
-  }, [loadMore]);
+  }, [loadMore, isLoading, isReachingEnd]);
 
   /** This function is responsible for handling the selection of a movie. It updates the selectedMovie state and adds a CSS class to the header element if a movie is selected. If no movie is selected, it removes the CSS class from the header element. */
   const handleSelectedMovie = (movieId: number | null) => {
@@ -98,7 +100,7 @@ function MovieListPage() {
       return <div>Loading movies...</div>;
     }
     
-    return content?.data.map((movie) => (
+    return content?.map((movie) => (
       <MovieTile key={movie.id} {...movie} onClick={handleSelectedMovie} />
     ));
   };
@@ -124,33 +126,6 @@ function MovieListPage() {
     setSearchParams(params);
   }
 
-  const updateMovieInLists = (updatedMovie: Movie) => {
-    mutatePages((pages) => {
-      if (!pages) return pages;
-
-      return pages.map((page) => {
-        return {
-          ...page,
-          data: page.data.map((movie) => movie.id === updatedMovie.id ? updatedMovie : movie)
-        };
-      });
-    }, false);
-  };
-
-  const addMovieToLists = (newMovie: Movie) => {
-    mutatePages((pages) => {
-      if (!pages || pages.length === 0) return pages;
-
-      return [
-        {
-          ...pages[0],
-          data: [newMovie, ...pages[0].data],
-        },
-        ...pages.slice(1),
-      ];
-    }, false);
-  };
-
   return (
     <>
       <Outlet context={
@@ -158,8 +133,6 @@ function MovieListPage() {
           initialQuery: getParam("search") || "", 
           onSearch: handleSearchQueryChange,
           movieId: movieId ? parseInt(movieId) : null,
-          onMovieUpdated: updateMovieInLists,
-          onMovieCreated: addMovieToLists
         }
       } />
       <main>

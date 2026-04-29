@@ -15,13 +15,14 @@
   },
   "dependencies": {
     "@hookform/resolvers": "^5.2.2",
+    "@tanstack/react-query": "^5.100.5",
+    "@tanstack/react-query-devtools": "^5.100.5",
     "react": "^19.2.0",
     "react-dom": "^19.2.0",
     "react-hook-form": "^7.72.1",
     "react-router-dom": "^7.14.0",
     "react-select": "^5.10.2",
     "react-select-event": "^5.5.1",
-    "swr": "^2.4.1",
     "zod": "^4.3.6"
   },
   "devDependencies": {
@@ -32,6 +33,7 @@
     "@storybook/addon-onboarding": "^10.2.15",
     "@storybook/addon-vitest": "^10.2.15",
     "@storybook/react-vite": "^10.2.15",
+    "@tanstack/eslint-plugin-query": "^5.100.5",
     "@testing-library/jest-dom": "^6.9.1",
     "@testing-library/react": "^16.3.2",
     "@testing-library/user-event": "^14.6.1",

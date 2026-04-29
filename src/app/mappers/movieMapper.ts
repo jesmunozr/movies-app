@@ -6,7 +6,7 @@ export const mapMovie = (apiMovie: ApiMovie): Movie => {
         id: apiMovie.id,
         title: apiMovie.title,
         releaseDate: new Date(apiMovie.release_date),
-        genres: apiMovie.genres.map(genre => ({ value: genre, label: genre })),
+        genres: apiMovie.genres.map(genre => ({ value: genre.toLowerCase(), label: genre })),
         duration: apiMovie.runtime,
         description: apiMovie.overview,
         rating: apiMovie.vote_average,
@@ -30,7 +30,7 @@ export const mapToApiMovie = (movie: Movie): ApiMovie => {
         budget: 0,
         revenue: 0,
         runtime: movie.duration,
-        genres: movie.genres ? movie.genres.map(genre => genre.value) : [],
+        genres: movie.genres ? movie.genres.map(genre => genre.label) : [],
         id: movie.id || undefined,
     } as ApiMovie;
 }

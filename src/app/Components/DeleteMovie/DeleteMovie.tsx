@@ -1,16 +1,39 @@
-import type { Movie } from "@/domain/models/Movie";
+import { useDeleteMovie } from "@/Services/apiClient";
 import "./DeleteMovie.css";
+import { useNavigate, useParams } from "react-router-dom";
+import Modal from "../Modal/Modal";
 
-interface DeleteMovieProps extends Movie {
-  onDelete: () => void;
-}
+const DeleteMovie = () => {
+  const { movieId } = useParams();
+  const { deleteMovie, isDeleting, error } = useDeleteMovie();
+  const navigate = useNavigate();
 
-const DeleteMovie = ({ ...props }: DeleteMovieProps) => {
+  const handleClose = () => {
+      navigate({
+          pathname: "/",
+          search: location.search
+      });
+  };
+
+  const handleDelete = async () => {
+      try {
+          await deleteMovie(Number(movieId));
+          handleClose();
+      } catch (error) {
+          console.error("Failed to delete movie:", error);
+      }
+  };
+
   return (
-    <div className="delete-confirmation">
-        <p>Are you sure you want to delete this movie?</p>
-        <button className="red-button" onClick={props.onDelete}>Delete</button>
-    </div>
+    <Modal isOpen={true} title="Delete Movie" onClose={handleClose}>
+      <div className="delete-confirmation">
+          <p>Are you sure you want to delete this movie?</p>
+          <button data-cy="delete-button" className="red-button" onClick={handleDelete} disabled={isDeleting}>
+            {isDeleting ? "Deleting..." : "Delete"}
+          </button>
+          {error && <p className="error-message">Failed to delete movie. Please try again.</p>}
+      </div>
+    </Modal>
   );
 };
 

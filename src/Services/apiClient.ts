@@ -1,20 +1,21 @@
-import useSWR, { mutate } from "swr";
-import useSWRInfinite from "swr/infinite";
-import useSWRMutation from "swr/mutation";
-import { useMemo, useCallback } from "react";
+import { useMemo } from "react";
 import { config } from "@/config/config";
 import type { ApiPageResponse, ApiRequestParams } from "@/api/models/Movie";
 import type { Movie, PageResponse } from "@/domain/models/Movie";
 import { mapMovie, mapPageResponse, mapToApiMovie } from "@/app/mappers/movieMapper";
+import { useInfiniteQuery, useQuery, useQueryClient, useMutation } from "@tanstack/react-query";
 
 const buildMoviesUrl = (params: ApiRequestParams) => {
   const query = new URLSearchParams();
 
-  if (params.search) query.append("search", params.search);
+  if (params.search) {
+    query.append("search", params.search);
+  }
+    
   query.append("searchBy", params.searchBy);
 
   if (params.filter?.length) {
-    query.append("filter", params.filter.join(","));
+    query.append("filter", params.filter);
   }
 
   query.append("sortBy", params.sortBy);
@@ -27,12 +28,18 @@ const buildMoviesUrl = (params: ApiRequestParams) => {
 
 async function getMovies(params: ApiRequestParams): Promise<PageResponse<Movie>> {
   const res = await fetch(buildMoviesUrl(params));
+
+  if (!res.ok) throw new Error("Failed to fetch movies");
+
   const data: ApiPageResponse = await res.json();
   return mapPageResponse(data);
 }
 
-async function getMovieById(url: string): Promise<Movie> {
-  const res = await fetch(`${config.apiBaseUrl}${url}`);
+async function getMovieById(movieId: number): Promise<Movie> {
+  const res = await fetch(`${config.apiBaseUrl}/movies/${movieId}`);
+
+  if (!res.ok) throw new Error("Failed to fetch movie");
+
   const data = await res.json();
   return mapMovie(data);
 }
@@ -61,123 +68,151 @@ async function updateMovieRequest(movie: Movie): Promise<Movie> {
   return mapMovie(await res.json());
 }
 
-export function useMovie(id?: number) {
-  const key = id ? `/movies/${id}` : null;
+async function deleteMovieRequest(movieId: number): Promise<void> {
+  const res = await fetch(`${config.apiBaseUrl}/movies/${movieId}`, {
+    method: "DELETE",
+  });
 
-  const { data, error, isLoading } = useSWR(key, getMovieById, {
-    revalidateOnFocus: false,
+  if (!res.ok) throw new Error("Failed to delete movie");
+}
+
+export function useMovie(id?: number) {
+  const key = ["movies", "details", id];
+
+  const { data, error, isLoading } = useQuery({
+    queryKey: key,
+    queryFn: async () => await getMovieById(id!),
+    enabled: !!id, // Only run this query if an ID is provided
+    retry: id ? 3 : false, // Retry only if ID is provided, otherwise it will fail due to missing ID
   });
 
   return {
     content: data,
-    isLoading,
-    isError: error,
+    isLoading: isLoading && !!id,
+    isError: !!error,
   };
 }
 
-export function useMoviesInfinite(params: Omit<ApiRequestParams, "offset" | "limit">) {
+export function useMoviesInfinite(params: ApiRequestParams) {
   const PAGE_SIZE = 12;
 
   const stableParams = useMemo(
-    () => params,
-    [
-      params.search,
-      params.searchBy,
-      params.sortBy,
-      params.sortOrder,
-      params.filter?.join(","),
-    ]
+    () => ({
+      filter: params.filter || "",
+      search: params.search || "",
+      searchBy: params.searchBy || "title",
+      sortBy: params.sortBy || "title",
+      sortOrder: params.sortOrder || "asc",
+    }),
+    [params]
   );
 
-  const getKey = useCallback(
-    (pageIndex: number, prev: PageResponse<Movie> | null) => {
-      if (prev && prev.data.length < PAGE_SIZE) return null;
-
-      return [
-        "movies",
-        {
-          ...stableParams,
-          offset: pageIndex * PAGE_SIZE,
-          limit: PAGE_SIZE,
-        },
-      ] as const;
+  const { 
+    data, 
+    error, 
+    fetchNextPage, 
+    hasNextPage, 
+    isFetchingNextPage, 
+    isLoading,
+    refetch,
+  } = useInfiniteQuery({
+    queryKey: ["movies", "list", stableParams],
+    queryFn: async ({ pageParam = 0 }) => {
+      const response = await getMovies({ 
+        ...stableParams, 
+        limit: PAGE_SIZE,
+        offset: pageParam,
+      });
+      return response.data;
     },
-    [stableParams]
-  );
-
-  const { data, error, size, setSize, isLoading, mutate: mutatePages } = useSWRInfinite(
-    getKey,
-    ([_, params]) => getMovies(params),
-    {
-      revalidateOnFocus: false,
-    }
-  );
+    initialPageParam: 0,
+    getNextPageParam: (lastPage, allPages) => {
+      return lastPage.length === PAGE_SIZE ? allPages.length * PAGE_SIZE : undefined;
+    },
+  });
 
   return {
-    content: data
-      ? {
-          data: data.flatMap((p) => p.data),
-          totalAmount: data[0]?.totalAmount ?? 0,
-        }
-      : undefined,
+    content: data?.pages ? data.pages.flat() : [],
     isLoading,
-    isError: error,
-    loadMore: () => setSize((s) => s + 1),
-    isReachingEnd: data ? data[data.length - 1]?.data.length < PAGE_SIZE : false,
-    mutatePages, // the useSWRInfinite mutate function, useful for cache updates after create/update
+    isError: !!error,
+    loadMore: fetchNextPage,
+    isReachingEnd: !hasNextPage,
+    isFetchingMore: isFetchingNextPage,
+    refresh: refetch,
   };
 }
 
-// function addMovieToLists(newMovie: Movie) {
-//   mutate(
-//     (key) => Array.isArray(key) && key[0] === "movies",
-//     (pages: PageResponse<Movie> | undefined) => {
-//       if (!pages) return pages;
-
-//       // Insert at top of first page
-//       const [first, ...rest] = pages.data;
-
-//         const result = {
-//             ...pages,
-//             data: [newMovie, first, ...rest],
-//         };
-//         return result;
-//     },
-//     false
-//   );
-// }
-
 export function useCreateMovie() {
-  const { trigger, isMutating } = useSWRMutation(
-    "/movies",
-    (_, { arg }: { arg: Omit<Movie, "id"> }) => createMovieRequest(arg)
-  );
+  const queryClient = useQueryClient();
 
-  const createMovie = async (movie: Omit<Movie, "id">) => {
-    const created = await trigger(movie);
+  const mutation = useMutation({
+    mutationFn: (newMovie: Omit<Movie, "id">) => createMovieRequest(newMovie),
+    onSuccess: (createdMovie) => {
+      // Invalidates the keys related to movie list
+      queryClient.invalidateQueries({ queryKey: ["movies", "list"] });
 
-    // addMovieToLists(created);
-    await mutate(`/movies/${created.id}`, created, false);
+      // Uses the retorned movie from API to add it into the cache
+      queryClient.setQueryData(["movies", "details", createdMovie.id], createdMovie);
+    },
+    onError: (error) => {
+      console.error("Failed to create movie:", error);
+    }
+  });
 
-    return created;
+  return {
+    createMovie: mutation.mutate,
+    isCreating: mutation.isPending,
+    error: mutation.error,
   };
-
-  return { createMovie, isCreating: isMutating };
 }
 
 export function useUpdateMovie() {
-  const { trigger, isMutating } = useSWRMutation(
-    "/movies",
-    (_, { arg }: { arg: Movie }) => updateMovieRequest(arg)
-  );
+  const queryClient = useQueryClient();
 
-  const updateMovie = async (movie: Movie) => {
-      const updated = await trigger(movie);
+  const mutation = useMutation({
+    mutationFn: (movie: Movie) => updateMovieRequest(movie),
+    onSuccess: (updatedMovie) => {
+      // Invalidates the keys related to movie list
+      queryClient.invalidateQueries({ queryKey: ["movies", "list"] });
 
-      mutate(`/movies/${updated.id}`, updated, false);
+      // Uses the retorned movie from API to update it into the cache
+      queryClient.setQueryData(["movies", "details", updatedMovie.id], updatedMovie);
 
-      return updated;
+      // Invalidate the movie details query to ensure the updated data is fetched
+      queryClient.invalidateQueries({ queryKey: ["movies", "details", updatedMovie.id], refetchType: "none" });
+    },
+    onError: (error) => {
+      console.error("Failed to update movie:", error);
+    }
+  });
+
+  return {
+    updateMovie: mutation.mutate,
+    isUpdating: mutation.isPending,
+    error: mutation.error,
   };
+}
 
-  return { updateMovie, isUpdating: isMutating };
+export function useDeleteMovie() {
+  const queryClient = useQueryClient();
+
+  const mutation = useMutation({
+    mutationFn: (movieId: number) => deleteMovieRequest(movieId),
+    onSuccess: (_, movieId) => {
+      // Invalidates the keys related to movie list
+      queryClient.invalidateQueries({ queryKey: ["movies", "list"] });
+
+      // Removes the deleted movie from the cache
+      queryClient.removeQueries({ queryKey: ["movies", "details", movieId] });
+    },
+    onError: (error) => {
+      console.error("Failed to delete movie:", error);
+    }
+  });
+
+  return {
+    deleteMovie: mutation.mutate,
+    isDeleting: mutation.isPending,
+    error: mutation.error,
+  };
 }
