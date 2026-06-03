@@ -6,7 +6,7 @@ export interface Movie {
     /** The release date of the movie */
     releaseDate?: Date;
     /** The genres of the movie */
-    genres?: Array<MovieGenre>;
+    genres?: MovieGenre[];
     /** The duration of the movie in minutes */
     duration?: number;
     /** The description of the movie */
@@ -23,3 +23,10 @@ export interface MovieGenre {
     /** The label of the genre, e.g., "Action", "Comedy", etc. */
     label: string;
 };
+
+export interface PageResponse<T> {
+    data: T[];
+    totalAmount: number;
+    offset: number;
+    limit: number;
+}

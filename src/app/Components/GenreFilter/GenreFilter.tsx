@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import "./GenreFilter.css";
-import type { MovieGenre } from '@/domain/models/Movie.ts';
+import type { MovieGenre } from '@/domain/models/Movie';
 
 export interface GenreFilterProps {
     genres: MovieGenre[];

@@ -2,42 +2,51 @@ import { describe, it, expect, vi, afterEach } from "vitest";
 import {render, screen, fireEvent} from '@testing-library/react';
 import { useMoviesInfinite } from "@/Services/apiClient.ts";
 import MovieListPage from "./MovieListPage";
-import type { ApiMovie, ApiPageResponse } from "@/api/models/Movie";
 import { MemoryRouter, Route, Routes } from "react-router-dom";
 import Search from "../Search/Search";
 import MovieDetails from "../MovieDetails/MovieDetails";
+import type { Movie } from "@/domain/models/Movie";
+
+vi.mock("@/Services/apiClient.ts", () => ({
+    useMoviesInfinite: vi.fn(),
+}));
 
 describe("MovieListPage", () => {
+    const buildUseMoviesInfiniteResult = (
+        overrides: Partial<ReturnType<typeof useMoviesInfinite>> = {}
+    ): ReturnType<typeof useMoviesInfinite> => ({
+        content: [],
+        isLoading: false,
+        isError: false,
+        loadMore: vi.fn(),
+        isReachingEnd: false,
+        isFetchingMore: false,
+        refresh: vi.fn(),
+        ...overrides,
+    });
+
     const mockMovies = [
         {
+            imageUrl: "https://example.com/poster1.jpg",
             title: "Movie 1",
-            tagline: "Tagline of Movie 1",
-            vote_average: 8.5,
-            vote_count: 1500,
-            release_date: "2022-01-01",
-            poster_path: "https://example.com/poster1.jpg",
-            overview: "Description of Movie 1",
-            budget: 100000000,
-            revenue: 500000000,
-            runtime: 120,
-            genres: ["Action", "Adventure"],
+            releaseDate: new Date("2022-01-01"),
+            genres: [{ label: "Action", value: "action" }, { label: "Adventure", value: "adventure" }],
+            duration: 120,
+            description: "Description of Movie 1",
+            rating: 8.5,
             id: 1,
         },
         {
+            imageUrl: "https://example.com/poster2.jpg",
             title: "Movie 2",
-            tagline: "Tagline of Movie 2",
-            vote_average: 7.8,
-            vote_count: 800,
-            release_date: "2023-01-01",
-            poster_path: "https://example.com/poster2.jpg",
-            overview: "Description of Movie 2",
-            budget: 50000000,
-            revenue: 200000000,
-            runtime: 110,
-            genres: ["Drama", "Romance"],
+            releaseDate: new Date("2023-01-01"),
+            genres: [{ label: "Drama", value: "drama" }, { label: "Romance", value: "romance" }],
+            duration: 110,
+            description: "Description of Movie 2",
+            rating: 7.8,
             id: 2,
         }
-    ] as ApiMovie[];
+    ] as Movie[];
 
     function renderWithRouter(ui: React.ReactElement, { route = "/" } = {}) {
         return render(
@@ -53,25 +62,11 @@ describe("MovieListPage", () => {
     }
 
     it("renders the MovieListPage component", async () => {
-
-        vi.mock("@/Services/apiClient", () => ({
-            useMoviesInfinite: vi.fn(),
-        }));
-
         const mockedUseMoviesInfinite = vi.mocked(useMoviesInfinite);
 
-        mockedUseMoviesInfinite.mockReturnValue({
-            content: {
-                data: mockMovies,
-                totalAmount: 2,
-                offset: 0,
-                limit: 10,
-            } as ApiPageResponse,
-            isLoading: false,
-            isError: undefined,
-            loadMore: vi.fn(),
-            isReachingEnd: true,
-        });
+        mockedUseMoviesInfinite.mockReturnValue(buildUseMoviesInfiniteResult({
+            content: mockMovies,
+        }));
 
         renderWithRouter(<MovieListPage />);
 
@@ -91,19 +86,14 @@ describe("MovieListPage", () => {
     it("loadMore is not called when isLoading is true", () => {
         const loadMoreMock = vi.fn();
 
-        vi.mock("@/Services/apiClient", () => ({
-            useMoviesInfinite: vi.fn(),
-        }));
-
         const mockedUseMoviesInfinite = vi.mocked(useMoviesInfinite);
 
-        mockedUseMoviesInfinite.mockReturnValue({
+        mockedUseMoviesInfinite.mockReturnValue(buildUseMoviesInfiniteResult({
             content: undefined,
             isLoading: true,
-            isError: undefined,
+            isError: false,
             loadMore: loadMoreMock,
-            isReachingEnd: false,
-        });
+        }));
 
         renderWithRouter(<MovieListPage />);
 
@@ -111,19 +101,13 @@ describe("MovieListPage", () => {
     });
 
     it("renders a load message when movies are loading", () => {
-        vi.mock("@/Services/apiClient", () => ({
-            useMoviesInfinite: vi.fn(),
-        }));
-
         const mockedUseMoviesInfinite = vi.mocked(useMoviesInfinite);
 
-        mockedUseMoviesInfinite.mockReturnValue({
+        mockedUseMoviesInfinite.mockReturnValue(buildUseMoviesInfiniteResult({
             content: undefined,
             isLoading: true,
-            isError: undefined,
-            loadMore: vi.fn(),
-            isReachingEnd: false,
-        });
+            isError: false,
+        }));
 
         renderWithRouter(<MovieListPage />);
 
@@ -131,19 +115,13 @@ describe("MovieListPage", () => {
     });
 
     it("renders an error message when there is an error loading movies", () => {
-        vi.mock("@/Services/apiClient", () => ({
-            useMoviesInfinite: vi.fn(),
-        }));
-
         const mockedUseMoviesInfinite = vi.mocked(useMoviesInfinite);
 
-        mockedUseMoviesInfinite.mockReturnValue({
+        mockedUseMoviesInfinite.mockReturnValue(buildUseMoviesInfiniteResult({
             content: undefined,
             isLoading: false,
-            isError: new Error("Failed fetching movies"),
-            loadMore: vi.fn(),
-            isReachingEnd: false,
-        });
+            isError: true,
+        }));
 
         renderWithRouter(<MovieListPage />);
 
@@ -152,23 +130,14 @@ describe("MovieListPage", () => {
 
     it("calls loadMore when scrolling to the bottom of the page", () => {
         const loadMoreMock = vi.fn();
-        vi.mock("@/Services/apiClient", () => ({
-            useMoviesInfinite: vi.fn(),
-        }));
         const mockedUseMoviesInfinite = vi.mocked(useMoviesInfinite);
 
-        mockedUseMoviesInfinite.mockReturnValue({
-            content: {
-                data: mockMovies,
-                totalAmount: 2,
-                offset: 0,
-                limit: 10,
-            } as ApiPageResponse,
+        mockedUseMoviesInfinite.mockReturnValue(buildUseMoviesInfiniteResult({
+            content: mockMovies,
             isLoading: false,
-            isError: undefined,
+            isError: false,
             loadMore: loadMoreMock,
-            isReachingEnd: false,
-        });
+        }));
 
         renderWithRouter(<MovieListPage />);
 

@@ -1,13 +1,31 @@
-import type { Preview } from '@storybook/react-vite';
+import type { Decorator, Preview } from '@storybook/react-vite';
 import { initialize, mswDecorator } from 'msw-storybook-addon';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { createElement } from 'react';
 
 import '../src/index.css';
 import '../src/app/Components/MovieListPage/MovieListPage.css';
 
 initialize();
 
+const withReactQuery: Decorator = (Story) => {
+  const queryClient = new QueryClient({
+    defaultOptions: {
+      queries: {
+        retry: false,
+      },
+    },
+  });
+
+  return createElement(
+    QueryClientProvider,
+    { client: queryClient },
+    createElement(Story)
+  );
+};
+
 const preview: Preview = {
-  decorators: [mswDecorator],
+  decorators: [mswDecorator, withReactQuery],
   parameters: {
     controls: {
       matchers: {

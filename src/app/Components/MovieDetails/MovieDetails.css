@@ -5,13 +5,20 @@
     font-family: 'Montserrat', sans-serif;
     font-weight: 300;
     width: 100%;
+    flex-wrap: wrap;
 }
-.movie-details img {
+.movie-details-content {
+    display: flex;
+    justify-content: space-between;
+    padding: 20px;
+    width: 100%;
+}
+.movie-details-content img {
     width: 322px;
     height: 482px;
     margin-right: 30px;
 }
-.movie-details .movie-details-info {
+.movie-details-content .movie-details-info {
     display: flex;
     flex-direction: column;
     flex-wrap: wrap;

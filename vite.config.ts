@@ -42,7 +42,7 @@ export default defineConfig({
     {
       extends: true,
       test:{
-        include: ['src/app/**/*.test.{ts,tsx}'],
+        include: ['src/**/*.test.{ts,tsx}'],
         name: {
           label: 'unit-tests',
           color: 'blue'
